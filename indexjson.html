@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JSON Forge — Formatter & Highlighter</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #0b0d12;
+    --surface:   #111318;
+    --surface2:  #181b22;
+    --border:    #252830;
+    --accent:    #e8ff47;
+    --accent2:   #47d4ff;
+    --accent3:   #ff6b9d;
+    --text:      #d8dce8;
+    --text-dim:  #5a5f72;
+    --text-muted:#3a3f52;
+
+    /* JSON token colours */
+    --c-key:     #47d4ff;
+    --c-str:     #a8ff78;
+    --c-num:     #ffb347;
+    --c-bool:    #e8ff47;
+    --c-null:    #ff6b9d;
+    --c-brace:   #9b8fff;
+    --c-comma:   #5a5f72;
+
+    /* Mixed-mode highlight */
+    --c-json-in-text: #e8ff4766;
+    --c-text-in-json: #ff6b9d33;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── Noise grain overlay ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    opacity: 0.5;
+  }
+
+  /* ── Glow blobs ── */
+  .blob {
+    position: fixed; border-radius: 50%;
+    filter: blur(120px); pointer-events: none; z-index: 0;
+  }
+  .blob-1 { width: 500px; height: 500px; top: -150px; left: -150px;
+             background: radial-gradient(circle, #e8ff4714, transparent 70%); }
+  .blob-2 { width: 400px; height: 400px; bottom: -100px; right: -100px;
+             background: radial-gradient(circle, #47d4ff12, transparent 70%); }
+
+  /* ── Layout ── */
+  .wrapper { position: relative; z-index: 1; max-width: 1280px; margin: 0 auto; padding: 0 32px; }
+
+  /* ── Header ── */
+  header {
+    padding: 40px 0 32px;
+    display: flex; align-items: flex-end; justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    animation: fadeDown .6s ease both;
+  }
+  .logo { display: flex; align-items: center; gap: 12px; }
+  .logo-icon {
+    width: 44px; height: 44px; background: var(--accent);
+    border-radius: 10px; display: grid; place-items: center;
+  }
+  .logo-icon svg { width: 24px; height: 24px; }
+  .logo-name { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.03em; }
+  .logo-name span { color: var(--accent); }
+  .tagline { font-size: .75rem; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; letter-spacing: .05em; }
+
+  .header-badges { display: flex; gap: 8px; padding-bottom: 4px; }
+  .badge {
+    font-family: 'JetBrains Mono', monospace; font-size: .65rem; letter-spacing: .08em;
+    padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border);
+    color: var(--text-dim); text-transform: uppercase;
+  }
+
+  /* ── Main grid ── */
+  .main-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 24px; padding: 32px 0;
+    animation: fadeUp .7s .1s ease both;
+  }
+  @media(max-width: 900px) { .main-grid { grid-template-columns: 1fr; } }
+
+  /* ── Panel ── */
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex; flex-direction: column;
+    transition: border-color .2s;
+  }
+  .panel:focus-within { border-color: var(--accent); }
+  .panel:focus-within .panel-label { color: var(--accent); }
+
+  .panel-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+  }
+  .panel-label {
+    font-size: .7rem; font-weight: 600; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--text-dim);
+    display: flex; align-items: center; gap: 8px;
+    transition: color .2s;
+  }
+  .dot { width: 7px; height: 7px; border-radius: 50%; }
+  .dot-yellow { background: var(--accent); }
+  .dot-blue   { background: var(--accent2); }
+
+  .panel-actions { display: flex; gap: 6px; }
+  .btn-icon {
+    background: transparent; border: 1px solid var(--border);
+    color: var(--text-dim); border-radius: 7px;
+    padding: 5px 10px; font-size: .65rem; font-family: 'JetBrains Mono', monospace;
+    cursor: pointer; letter-spacing: .05em; text-transform: uppercase;
+    display: flex; align-items: center; gap: 5px;
+    transition: all .15s;
+  }
+  .btn-icon:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-icon.danger:hover { border-color: var(--accent3); color: var(--accent3); }
+
+  textarea {
+    flex: 1; min-height: 380px; resize: vertical;
+    background: transparent; border: none; outline: none;
+    padding: 18px; font-family: 'JetBrains Mono', monospace;
+    font-size: .82rem; line-height: 1.7;
+    color: var(--text); caret-color: var(--accent);
+  }
+  textarea::placeholder { color: var(--text-muted); }
+
+  /* ── Output panel ── */
+  .output-area {
+    flex: 1; min-height: 380px; overflow: auto;
+    padding: 18px; font-family: 'JetBrains Mono', monospace;
+    font-size: .82rem; line-height: 1.7;
+    white-space: pre-wrap; word-break: break-all;
+  }
+
+  /* ── Format button strip ── */
+  .controls {
+    display: flex; gap: 12px; align-items: center;
+    padding: 20px 0;
+    animation: fadeUp .7s .2s ease both;
+  }
+  .btn-primary {
+    background: var(--accent); color: #0b0d12;
+    border: none; border-radius: 10px;
+    padding: 12px 28px; font-family: 'Syne', sans-serif;
+    font-size: .85rem; font-weight: 700; letter-spacing: .04em;
+    cursor: pointer;
+    transition: all .15s; transform: translateY(0);
+    box-shadow: 0 0 0 0 #e8ff4740;
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px #e8ff4730;
+  }
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-secondary {
+    background: transparent; border: 1px solid var(--border);
+    color: var(--text); border-radius: 10px;
+    padding: 12px 20px; font-family: 'Syne', sans-serif;
+    font-size: .85rem; font-weight: 600;
+    cursor: pointer; transition: all .15s;
+  }
+  .btn-secondary:hover { border-color: var(--accent2); color: var(--accent2); }
+
+  .indent-control {
+    display: flex; align-items: center; gap: 8px;
+    font-size: .75rem; color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace; margin-left: auto;
+  }
+  .indent-control select {
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text); border-radius: 7px; padding: 6px 10px;
+    font-family: 'JetBrains Mono', monospace; font-size: .75rem;
+    cursor: pointer; outline: none;
+  }
+
+  /* ── Status bar ── */
+  .status-bar {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    padding: 12px 0 0; border-top: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace; font-size: .68rem;
+    color: var(--text-dim);
+    animation: fadeUp .7s .3s ease both;
+  }
+  .status-item { display: flex; align-items: center; gap: 6px; }
+  .status-pill {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 5px; padding: 2px 8px; font-size: .65rem;
+  }
+  .status-pill.ok   { border-color: #a8ff7866; color: #a8ff78; background: #a8ff7810; }
+  .status-pill.warn { border-color: #ffb34766; color: #ffb347; background: #ffb34710; }
+  .status-pill.err  { border-color: #ff6b9d66; color: #ff6b9d; background: #ff6b9d10; }
+  .status-pill.info { border-color: #47d4ff66; color: #47d4ff; background: #47d4ff10; }
+
+  /* ── JSON syntax tokens ── */
+  .t-key   { color: var(--c-key); }
+  .t-str   { color: var(--c-str); }
+  .t-num   { color: var(--c-num); }
+  .t-bool  { color: var(--c-bool); }
+  .t-null  { color: var(--c-null); }
+  .t-brace { color: var(--c-brace); }
+  .t-comma { color: var(--c-comma); }
+
+  /* ── Mixed mode: text interleaved with JSON ── */
+  .mixed-json-block {
+    background: #47d4ff0d;
+    border-left: 2px solid var(--accent2);
+    border-radius: 0 6px 6px 0;
+    padding: 2px 8px;
+    display: inline-block;
+    white-space: pre-wrap;
+  }
+  .plain-text-line {
+    color: var(--text-dim);
+    display: block;
+  }
+  .plain-text-line.has-json-fragment {
+    background: #e8ff470a;
+    border-radius: 4px;
+    padding: 1px 4px;
+  }
+
+  /* ── Error message ── */
+  .error-msg {
+    color: var(--accent3);
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 14px; background: #ff6b9d0d; border-radius: 8px;
+    border: 1px solid #ff6b9d30; font-size: .78rem;
+    font-family: 'JetBrains Mono', monospace; line-height: 1.6;
+  }
+
+  /* ── Legend ── */
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    padding: 12px 0;
+    animation: fadeUp .7s .35s ease both;
+  }
+  .legend-item {
+    display: flex; align-items: center; gap: 6px;
+    font-size: .65rem; font-family: 'JetBrains Mono', monospace;
+    color: var(--text-dim); background: var(--surface2);
+    border: 1px solid var(--border); border-radius: 6px; padding: 4px 10px;
+  }
+  .legend-swatch { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+
+  /* ── Copy toast ── */
+  #toast {
+    position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: var(--surface2); border: 1px solid var(--accent);
+    color: var(--accent); border-radius: 10px;
+    padding: 10px 22px; font-size: .78rem; font-family: 'JetBrains Mono', monospace;
+    pointer-events: none; z-index: 100;
+    transition: transform .3s cubic-bezier(.34,1.56,.64,1), opacity .3s;
+    opacity: 0;
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+  /* ── Line numbers ── */
+  .output-area .ln { color: var(--text-muted); user-select: none; margin-right: 14px; display: inline-block; min-width: 2ch; text-align: right; }
+
+  /* ── Collapse toggles ── */
+  .collapse-btn {
+    background: none; border: none; cursor: pointer;
+    color: var(--text-muted); font-size: .65rem;
+    padding: 0 2px; font-family: 'JetBrains Mono', monospace;
+    vertical-align: middle;
+    transition: color .15s;
+  }
+  .collapse-btn:hover { color: var(--accent); }
+  .collapsible { transition: none; }
+  .collapsible.collapsed > .children { display: none; }
+  .collapsed-preview { color: var(--text-muted); font-size: .75rem; }
+
+  /* ── Animations ── */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+</style>
+</head>
+<body>
+
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+
+<div class="wrapper">
+  <!-- Header -->
+  <header>
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 6C4 4.9 4.9 4 6 4H10L12 7H18C19.1 7 20 7.9 20 9V18C20 19.1 19.1 20 18 20H6C4.9 20 4 19.1 4 18V6Z" fill="#0b0d12" stroke="#0b0d12" stroke-width="1.5"/>
+          <text x="8" y="16" font-size="8" fill="#0b0d12" font-family="monospace" font-weight="bold">{}</text>
+        </svg>
+        <!-- simpler icon -->
+        <span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:#0b0d12;font-size:1rem;">{}</span>
+      </div>
+      <div>
+        <div class="logo-name">IP <span>JSON</span><span>FORGE</span></div>
+        <div class="tagline">// format · validate · highlight</div>
+      </div>
+    </div>
+    <div class="header-badges">
+      <span class="badge">v2.0</span>
+      <span class="badge">browser-only</span>
+      <span class="badge">zero deps</span>
+    </div>
+  </header>
+
+  <!-- Controls -->
+  <div class="controls">
+    <button class="btn-primary" onclick="processInput()">⚡ Format & Highlight</button>
+    <button class="btn-secondary" onclick="loadSample('json')">Sample JSON</button>
+    <button class="btn-secondary" onclick="loadSample('mixed')">Sample Mixed</button>
+    <button class="btn-secondary" onclick="clearAll()">Clear</button>
+    <div class="indent-control">
+      <span>Indent</span>
+      <select id="indent">
+        <option value="2">2 spaces</option>
+        <option value="4">4 spaces</option>
+        <option value="1">1 tab (\\t)</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Main panels -->
+  <div class="main-grid">
+    <!-- Input -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-label"><div class="dot dot-yellow"></div>Input</div>
+        <div class="panel-actions">
+          <button class="btn-icon" onclick="pasteClipboard()">⌘ Paste</button>
+          <button class="btn-icon danger" onclick="clearInput()">✕ Clear</button>
+        </div>
+      </div>
+      <textarea id="inputArea" placeholder="Paste your JSON, mixed text+JSON, or any text here…
+
+Examples:
+• Pure JSON object or array
+• Text with embedded JSON snippets
+• Multi-line mixed content
+• Minified JSON on one line"></textarea>
+    </div>
+
+    <!-- Output -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-label"><div class="dot dot-blue"></div>Output</div>
+        <div class="panel-actions">
+          <button class="btn-icon" onclick="copyOutput()">⎘ Copy</button>
+          <button class="btn-icon" onclick="downloadOutput()">↓ Download</button>
+          <button class="btn-icon" onclick="toggleLineNumbers()">≡ Lines</button>
+        </div>
+      </div>
+      <div class="output-area" id="outputArea">
+        <span style="color:var(--text-muted);font-family:'JetBrains Mono',monospace;font-size:.78rem;">
+// Output will appear here after formatting…
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Status bar -->
+  <div class="status-bar" id="statusBar">
+    <div class="status-item">Status <span class="status-pill" id="statusPill">idle</span></div>
+    <div class="status-item">Type <span class="status-pill info" id="typePill">—</span></div>
+    <div class="status-item">Size <span class="status-pill" id="sizePill">0 B</span></div>
+    <div class="status-item">Keys <span class="status-pill" id="keysPill">—</span></div>
+    <div class="status-item">Depth <span class="status-pill" id="depthPill">—</span></div>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend">
+    <div class="legend-item"><div class="legend-swatch" style="background:var(--c-key)"></div>Key</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:var(--c-str)"></div>String</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:var(--c-num)"></div>Number</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:var(--c-bool)"></div>Boolean</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:var(--c-null)"></div>Null</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:var(--c-brace)"></div>Bracket / Brace</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:var(--accent2);opacity:.6"></div>JSON in text</div>
+    <div class="legend-item"><div class="legend-swatch" style="background:var(--text-dim)"></div>Plain text</div>
+  </div>
+</div>
+
+<div id="toast">✓ Copied to clipboard</div>
+
+<script>
+// ═══════════════════════════════════════
+//  State
+// ═══════════════════════════════════════
+let showLines = true;
+let lastOutputText = '';
+
+// ═══════════════════════════════════════
+//  Detect input type
+// ═══════════════════════════════════════
+function detectType(raw) {
+  const trimmed = raw.trim();
+  // Pure JSON?
+  try {
+    JSON.parse(trimmed);
+    return 'pure-json';
+  } catch(_) {}
+
+  // Contains JSON fragments?
+  const jsonFragmentRe = /(\{[\s\S]*?\}|\[[\s\S]*?\])/g;
+  const matches = trimmed.match(jsonFragmentRe);
+  if (matches) {
+    for (const m of matches) {
+      try { JSON.parse(m); return 'mixed'; } catch(_) {}
+    }
+  }
+  return 'plain-text';
+}
+
+// ═══════════════════════════════════════
+//  JSON Syntax Highlighter
+// ═══════════════════════════════════════
+function syntaxHighlight(obj, indent) {
+  const indentStr = indent == 1 ? '\t' : ' '.repeat(indent);
+  const jsonStr = JSON.stringify(obj, null, indentStr);
+  return jsonStr.replace(
+    /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?|[{}\[\],])/g,
+    match => {
+      if (/^"/.test(match)) {
+        if (/:$/.test(match)) {
+          // key
+          return `<span class="t-key">${escHtml(match)}</span>`;
+        }
+        return `<span class="t-str">${escHtml(match)}</span>`;
+      }
+      if (/true|false/.test(match)) return `<span class="t-bool">${match}</span>`;
+      if (/null/.test(match))       return `<span class="t-null">${match}</span>`;
+      if (/[{}\[\]]/.test(match))   return `<span class="t-brace">${match}</span>`;
+      if (/,/.test(match))          return `<span class="t-comma">${match}</span>`;
+      return `<span class="t-num">${match}</span>`;
+    }
+  );
+}
+
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ═══════════════════════════════════════
+//  Count helpers
+// ═══════════════════════════════════════
+function countKeys(obj, depth = 0) {
+  let keys = 0, maxDepth = depth;
+  if (obj !== null && typeof obj === 'object') {
+    for (const k of Object.keys(obj)) {
+      keys++;
+      const [subKeys, subDepth] = countKeys(obj[k], depth + 1);
+      keys += subKeys;
+      maxDepth = Math.max(maxDepth, subDepth);
+    }
+  } else if (Array.isArray(obj)) {
+    for (const item of obj) {
+      const [subKeys, subDepth] = countKeys(item, depth + 1);
+      keys += subKeys;
+      maxDepth = Math.max(maxDepth, subDepth);
+    }
+  }
+  return [keys, maxDepth];
+}
+
+function getDepth(obj) {
+  if (obj === null || typeof obj !== 'object') return 0;
+  if (Object.keys(obj).length === 0) return 1;
+  return 1 + Math.max(...Object.values(obj).map(getDepth));
+}
+
+function formatBytes(n) {
+  if (n < 1024) return n + ' B';
+  if (n < 1048576) return (n/1024).toFixed(1) + ' KB';
+  return (n/1048576).toFixed(1) + ' MB';
+}
+
+// ═══════════════════════════════════════
+//  Add line numbers
+// ═══════════════════════════════════════
+function addLineNumbers(html) {
+  const lines = html.split('\n');
+  return lines.map((line, i) =>
+    `<span class="ln">${i+1}</span>${line}`
+  ).join('\n');
+}
+
+// ═══════════════════════════════════════
+//  Pure JSON renderer
+// ═══════════════════════════════════════
+function renderPureJSON(raw, indent) {
+  const obj = JSON.parse(raw.trim());
+  const highlighted = syntaxHighlight(obj, indent);
+  const depth = getDepth(obj);
+  let totalKeys = 0;
+  const countObj = (o) => {
+    if (o === null || typeof o !== 'object') return;
+    for (const k of Object.keys(o)) { totalKeys++; countObj(o[k]); }
+    if (Array.isArray(o)) o.forEach(countObj);
+  };
+  countObj(obj);
+
+  updateStatus('ok', 'pure JSON', formatBytes(raw.length), totalKeys, depth);
+  return showLines ? addLineNumbers(highlighted) : highlighted;
+}
+
+// ═══════════════════════════════════════
+//  Mixed content renderer
+// ═══════════════════════════════════════
+function renderMixed(raw, indent) {
+  // Split into lines, try to detect JSON blobs spanning multiple lines
+  const lines = raw.split('\n');
+  let result = '';
+  let buffer = '';
+  let jsonCount = 0;
+
+  const flushBuffer = () => {
+    if (!buffer.trim()) { result += escHtml(buffer) + '\n'; buffer = ''; return; }
+    // try parse buffer as JSON
+    const trimBuf = buffer.trim();
+    try {
+      const obj = JSON.parse(trimBuf);
+      // It's JSON!
+      jsonCount++;
+      const highlighted = syntaxHighlight(obj, indent);
+      result += `<span class="mixed-json-block">${highlighted}</span>\n`;
+    } catch(_) {
+      // Plain text — check if line contains inline JSON fragments
+      result += renderMixedLine(buffer) + '\n';
+    }
+    buffer = '';
+  };
+
+  let inBrace = 0, inBracket = 0, collecting = false;
+
+  for (const line of lines) {
+    const stripped = line.trim();
+    for (const ch of stripped) {
+      if (ch === '{') inBrace++;
+      if (ch === '}') inBrace--;
+      if (ch === '[') inBracket++;
+      if (ch === ']') inBracket--;
+    }
+
+    if (!collecting) {
+      const firstChar = stripped[0];
+      if (firstChar === '{' || firstChar === '[') {
+        collecting = true;
+        buffer += line + '\n';
+        if (inBrace === 0 && inBracket === 0) { collecting = false; flushBuffer(); }
+      } else {
+        result += renderMixedLine(line) + '\n';
+      }
+    } else {
+      buffer += line + '\n';
+      if (inBrace <= 0 && inBracket <= 0) { collecting = false; flushBuffer(); }
+    }
+  }
+  if (buffer) flushBuffer();
+
+  updateStatus('warn', 'mixed (text+JSON)', formatBytes(raw.length), jsonCount + ' JSON blocks', '—');
+  return showLines ? result.split('\n').map((l,i)=>`<span class="ln">${i+1}</span>${l}`).join('\n') : result;
+}
+
+function renderMixedLine(line) {
+  // Try to find inline JSON fragments like {...} or [...]
+  const esc = escHtml(line);
+  // Pattern: find {...} or [...] that parse as JSON
+  const re = /(\{[^{}]*\}|\[[^\[\]]*\])/g;
+  let result = line;
+  let hasFrag = false;
+  const frags = [];
+  let m;
+  while ((m = re.exec(line)) !== null) {
+    try {
+      JSON.parse(m[0]);
+      frags.push({ start: m.index, end: m.index + m[0].length, val: m[0] });
+      hasFrag = true;
+    } catch(_) {}
+  }
+
+  if (!hasFrag) {
+    return `<span class="plain-text-line">${esc}</span>`;
+  }
+
+  let out = '';
+  let cursor = 0;
+  for (const frag of frags) {
+    out += `<span class="plain-text-line">${escHtml(line.slice(cursor, frag.start))}</span>`;
+    try {
+      const obj = JSON.parse(frag.val);
+      out += `<span class="mixed-json-block">${syntaxHighlight(obj, 2)}</span>`;
+    } catch(_) {
+      out += escHtml(frag.val);
+    }
+    cursor = frag.end;
+  }
+  out += `<span class="plain-text-line">${escHtml(line.slice(cursor))}</span>`;
+  return `<span class="plain-text-line has-json-fragment">${out}</span>`;
+}
+
+// ═══════════════════════════════════════
+//  Plain text renderer
+// ═══════════════════════════════════════
+function renderPlain(raw) {
+  updateStatus('info', 'plain text', formatBytes(raw.length), '—', '—');
+  const lines = raw.split('\n');
+  return lines.map((l, i) =>
+    (showLines ? `<span class="ln">${i+1}</span>` : '') + `<span class="plain-text-line">${escHtml(l)}</span>`
+  ).join('\n');
+}
+
+// ═══════════════════════════════════════
+//  Status updater
+// ═══════════════════════════════════════
+function updateStatus(kind, type, size, keys, depth) {
+  const pill = document.getElementById('statusPill');
+  const kindMap = { ok: 'valid ✓', warn: 'mixed ⚠', err: 'error ✗', info: 'text ℹ' };
+  pill.textContent = kindMap[kind] || kind;
+  pill.className = 'status-pill ' + kind;
+  document.getElementById('typePill').textContent = type;
+  document.getElementById('sizePill').textContent = size;
+  document.getElementById('keysPill').textContent = keys;
+  document.getElementById('depthPill').textContent = depth;
+}
+
+// ═══════════════════════════════════════
+//  Main processor
+// ═══════════════════════════════════════
+function processInput() {
+  const raw = document.getElementById('inputArea').value;
+  const indentVal = parseInt(document.getElementById('indent').value);
+  const out = document.getElementById('outputArea');
+
+  if (!raw.trim()) {
+    out.innerHTML = '<span style="color:var(--text-muted)">// Nothing to format — paste something above!</span>';
+    updateStatus('info', '—', '0 B', '—', '—');
+    return;
+  }
+
+  const type = detectType(raw);
+  lastOutputText = raw;
+
+  try {
+    let html = '';
+    if (type === 'pure-json') {
+      html = renderPureJSON(raw, indentVal);
+    } else if (type === 'mixed') {
+      html = renderMixed(raw, indentVal);
+    } else {
+      html = renderPlain(raw);
+    }
+    out.innerHTML = html;
+  } catch(e) {
+    out.innerHTML = `<div class="error-msg">⚠ ${escHtml(e.message)}</div>`;
+    updateStatus('err', 'parse error', formatBytes(raw.length), '—', '—');
+  }
+}
+
+// ═══════════════════════════════════════
+//  Actions
+// ═══════════════════════════════════════
+async function pasteClipboard() {
+  try {
+    const text = await navigator.clipboard.readText();
+    document.getElementById('inputArea').value = text;
+    processInput();
+  } catch(_) { alert('Clipboard permission denied — paste manually.'); }
+}
+
+function copyOutput() {
+  const out = document.getElementById('outputArea');
+  const text = out.innerText || out.textContent;
+  navigator.clipboard.writeText(text).then(() => showToast('✓ Copied!'));
+}
+
+function downloadOutput() {
+  const out = document.getElementById('outputArea');
+  const text = out.innerText || out.textContent;
+  const blob = new Blob([text], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'formatted.json';
+  a.click();
+}
+
+function toggleLineNumbers() {
+  showLines = !showLines;
+  processInput();
+}
+
+function clearAll() {
+  document.getElementById('inputArea').value = '';
+  document.getElementById('outputArea').innerHTML =
+    '<span style="color:var(--text-muted);font-family:\'JetBrains Mono\',monospace;font-size:.78rem;">// Output will appear here after formatting…</span>';
+  updateStatus('info', '—', '0 B', '—', '—');
+}
+
+function clearInput() {
+  document.getElementById('inputArea').value = '';
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// ═══════════════════════════════════════
+//  Sample data
+// ═══════════════════════════════════════
+const samples = {
+  json: `{
+  "user": {
+    "id": 1042,
+    "name": "Arjun Mehta",
+    "email": "arjun@example.com",
+    "active": true,
+    "score": 98.6,
+    "roles": ["admin", "editor"],
+    "address": {
+      "city": "Mumbai",
+      "pincode": "400001",
+      "country": "India"
+    },
+    "lastLogin": null
+  },
+  "meta": {
+    "version": "3.1.0",
+    "generated": "2026-03-27T10:00:00Z",
+    "tags": ["production", "verified"]
+  }
+}`,
+  mixed: `API Response Log — 2026-03-27
+
+[INFO] Request received from client 10.0.0.42
+[INFO] Auth token validated successfully
+
+Response payload:
+{"status": "success", "code": 200, "message": "Data fetched"}
+
+User details returned:
+{"id": 7821, "name": "Priya Sharma", "plan": "pro", "credits": 450}
+
+[WARN] Rate limit approaching: {"limit": 1000, "used": 892, "reset_at": "2026-03-27T12:00:00Z"}
+
+[INFO] Processing complete. Total time: 142ms
+[DEBUG] Cache hit ratio: 0.87
+Error log: {"error": null, "warnings": ["disk_usage > 80%"]}
+
+End of log.`
+};
+
+function loadSample(type) {
+  document.getElementById('inputArea').value = samples[type];
+  processInput();
+}
+
+// ═══════════════════════════════════════
+//  Auto-format on Ctrl+Enter
+// ═══════════════════════════════════════
+document.getElementById('inputArea').addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    e.preventDefault();
+    processInput();
+  }
+});
+
+// Real-time char count in status
+document.getElementById('inputArea').addEventListener('input', function() {
+  const len = this.value.length;
+  document.getElementById('sizePill').textContent = formatBytes(len);
+});
+</script>
+</body>
+</html>
