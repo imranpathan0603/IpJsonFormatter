@@ -3,808 +3,1081 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JSON Forge — Formatter & Highlighter</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>IP Tools — Patent Formatter & JSON Forge</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Syne+Mono&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg:        #0b0d12;
-    --surface:   #111318;
-    --surface2:  #181b22;
-    --border:    #252830;
-    --accent:    #e8ff47;
-    --accent2:   #47d4ff;
-    --accent3:   #ff6b9d;
-    --text:      #d8dce8;
-    --text-dim:  #5a5f72;
-    --text-muted:#3a3f52;
+/* ══════════════════════════════════════
+   ROOT & RESET
+══════════════════════════════════════ */
+:root {
+  --bg:          #080a0f;
+  --surface:     #0f1117;
+  --surface2:    #161921;
+  --card:        #13151d;
+  --border:      #21252f;
+  --border2:     #2a2f3d;
+  --accent:      #e8ff47;
+  --accent2:     #47d4ff;
+  --accent3:     #ff6b9d;
+  --accent4:     #a78bfa;
+  --text:        #d8dce8;
+  --text-dim:    #5a5f72;
+  --text-muted:  #32374a;
 
-    /* JSON token colours */
-    --c-key:     #47d4ff;
-    --c-str:     #a8ff78;
-    --c-num:     #ffb347;
-    --c-bool:    #e8ff47;
-    --c-null:    #ff6b9d;
-    --c-brace:   #9b8fff;
-    --c-comma:   #5a5f72;
+  /* JSON tokens */
+  --c-key:   #47d4ff;
+  --c-str:   #a8ff78;
+  --c-num:   #ffb347;
+  --c-bool:  #e8ff47;
+  --c-null:  #ff6b9d;
+  --c-brace: #a78bfa;
+  --c-comma: #5a5f72;
+}
 
-    /* Mixed-mode highlight */
-    --c-json-in-text: #e8ff4766;
-    --c-text-in-json: #ff6b9d33;
-  }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Syne', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
 
-  body {
-    font-family: 'Syne', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+/* Noise grain */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events: none; opacity: .6;
+}
 
-  /* ── Noise grain overlay ── */
-  body::before {
-    content: '';
-    position: fixed; inset: 0; z-index: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-    pointer-events: none;
-    opacity: 0.5;
-  }
+/* Grid lines background */
+body::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 0;
+  background-image:
+    linear-gradient(rgba(232,255,71,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(71,212,255,0.02) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+}
 
-  /* ── Glow blobs ── */
-  .blob {
-    position: fixed; border-radius: 50%;
-    filter: blur(120px); pointer-events: none; z-index: 0;
-  }
-  .blob-1 { width: 500px; height: 500px; top: -150px; left: -150px;
-             background: radial-gradient(circle, #e8ff4714, transparent 70%); }
-  .blob-2 { width: 400px; height: 400px; bottom: -100px; right: -100px;
-             background: radial-gradient(circle, #47d4ff12, transparent 70%); }
+/* Glow blobs */
+.blob { position: fixed; border-radius: 50%; filter: blur(140px); pointer-events: none; z-index: 0; }
+.blob-1 { width: 600px; height: 600px; top: -200px; left: -200px; background: radial-gradient(circle, #e8ff4710, transparent 70%); }
+.blob-2 { width: 500px; height: 500px; bottom: -150px; right: -150px; background: radial-gradient(circle, #47d4ff0e, transparent 70%); }
+.blob-3 { width: 300px; height: 300px; top: 40%; left: 60%; background: radial-gradient(circle, #a78bfa08, transparent 70%); }
 
-  /* ── Layout ── */
-  .wrapper { position: relative; z-index: 1; max-width: 1280px; margin: 0 auto; padding: 0 32px; }
+/* ══════════════════════════════════════
+   LAYOUT WRAPPER
+══════════════════════════════════════ */
+.wrapper { position: relative; z-index: 1; max-width: 1300px; margin: 0 auto; padding: 0 28px; }
 
-  /* ── Header ── */
-  header {
-    padding: 40px 0 32px;
-    display: flex; align-items: flex-end; justify-content: space-between;
-    border-bottom: 1px solid var(--border);
-    animation: fadeDown .6s ease both;
-  }
-  .logo { display: flex; align-items: center; gap: 12px; }
-  .logo-icon {
-    width: 44px; height: 44px; background: var(--accent);
-    border-radius: 10px; display: grid; place-items: center;
-  }
-  .logo-icon svg { width: 24px; height: 24px; }
-  .logo-name { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.03em; }
-  .logo-name span { color: var(--accent); }
-  .tagline { font-size: .75rem; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; letter-spacing: .05em; }
+/* ══════════════════════════════════════
+   TOP HEADER / BRAND
+══════════════════════════════════════ */
+.top-header {
+  padding: 32px 0 0;
+  display: flex; align-items: center; justify-content: space-between;
+  animation: fadeDown .55s ease both;
+}
 
-  .header-badges { display: flex; gap: 8px; padding-bottom: 4px; }
-  .badge {
-    font-family: 'JetBrains Mono', monospace; font-size: .65rem; letter-spacing: .08em;
-    padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border);
-    color: var(--text-dim); text-transform: uppercase;
-  }
+.brand { display: flex; align-items: center; gap: 14px; }
 
-  /* ── Main grid ── */
-  .main-grid {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 24px; padding: 32px 0;
-    animation: fadeUp .7s .1s ease both;
-  }
-  @media(max-width: 900px) { .main-grid { grid-template-columns: 1fr; } }
+.brand-icon {
+  width: 48px; height: 48px;
+  background: var(--accent);
+  display: grid; place-items: center;
+  position: relative;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+}
+.brand-icon span {
+  font-family: 'Syne Mono', monospace;
+  font-size: 1.1rem; font-weight: 700;
+  color: #080a0f;
+  letter-spacing: -0.05em;
+}
 
-  /* ── Panel ── */
-  .panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    overflow: hidden;
-    display: flex; flex-direction: column;
-    transition: border-color .2s;
-  }
-  .panel:focus-within { border-color: var(--accent); }
-  .panel:focus-within .panel-label { color: var(--accent); }
+.brand-text {}
+.brand-name {
+  font-size: 1.6rem; font-weight: 800;
+  letter-spacing: -0.04em; line-height: 1;
+  display: flex; align-items: baseline; gap: 4px;
+}
+.brand-name .ip { color: var(--accent); }
+.brand-name .tools { color: var(--text); }
+.brand-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .62rem; color: var(--text-dim);
+  letter-spacing: .12em; text-transform: uppercase;
+  margin-top: 3px;
+}
 
-  .panel-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 14px 18px;
-    border-bottom: 1px solid var(--border);
-    background: var(--surface2);
-  }
-  .panel-label {
-    font-size: .7rem; font-weight: 600; letter-spacing: .1em;
-    text-transform: uppercase; color: var(--text-dim);
-    display: flex; align-items: center; gap: 8px;
-    transition: color .2s;
-  }
-  .dot { width: 7px; height: 7px; border-radius: 50%; }
-  .dot-yellow { background: var(--accent); }
-  .dot-blue   { background: var(--accent2); }
+.header-meta { display: flex; gap: 8px; align-items: center; }
+.meta-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .6rem; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--text-dim); border: 1px solid var(--border2);
+  padding: 3px 10px; border-radius: 20px;
+}
+.meta-badge.live { border-color: #a8ff7844; color: #a8ff78; background: #a8ff7808; }
 
-  .panel-actions { display: flex; gap: 6px; }
-  .btn-icon {
-    background: transparent; border: 1px solid var(--border);
-    color: var(--text-dim); border-radius: 7px;
-    padding: 5px 10px; font-size: .65rem; font-family: 'JetBrains Mono', monospace;
-    cursor: pointer; letter-spacing: .05em; text-transform: uppercase;
-    display: flex; align-items: center; gap: 5px;
-    transition: all .15s;
-  }
-  .btn-icon:hover { border-color: var(--accent); color: var(--accent); }
-  .btn-icon.danger:hover { border-color: var(--accent3); color: var(--accent3); }
+/* ══════════════════════════════════════
+   NAV TABS
+══════════════════════════════════════ */
+.nav-strip {
+  display: flex; gap: 0;
+  margin: 28px 0 0;
+  border-bottom: 1px solid var(--border);
+  animation: fadeDown .55s .1s ease both;
+  position: relative;
+}
 
-  textarea {
-    flex: 1; min-height: 380px; resize: vertical;
-    background: transparent; border: none; outline: none;
-    padding: 18px; font-family: 'JetBrains Mono', monospace;
-    font-size: .82rem; line-height: 1.7;
-    color: var(--text); caret-color: var(--accent);
-  }
-  textarea::placeholder { color: var(--text-muted); }
+.tab-btn {
+  background: transparent; border: none;
+  color: var(--text-dim);
+  font-family: 'Syne', sans-serif;
+  font-size: .82rem; font-weight: 700;
+  letter-spacing: .04em; text-transform: uppercase;
+  padding: 14px 28px 13px;
+  cursor: pointer;
+  position: relative;
+  transition: color .2s;
+  display: flex; align-items: center; gap: 10px;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
 
-  /* ── Output panel ── */
-  .output-area {
-    flex: 1; min-height: 380px; overflow: auto;
-    padding: 18px; font-family: 'JetBrains Mono', monospace;
-    font-size: .82rem; line-height: 1.7;
-    white-space: pre-wrap; word-break: break-all;
-  }
+.tab-icon {
+  width: 22px; height: 22px;
+  border: 1px solid currentColor;
+  display: grid; place-items: center;
+  font-size: .65rem;
+  font-family: 'JetBrains Mono', monospace;
+  opacity: .7;
+  transition: opacity .2s;
+  flex-shrink: 0;
+}
+.tab-btn.active .tab-icon { opacity: 1; border-color: var(--accent); }
 
-  /* ── Format button strip ── */
-  .controls {
-    display: flex; gap: 12px; align-items: center;
-    padding: 20px 0;
-    animation: fadeUp .7s .2s ease both;
-  }
-  .btn-primary {
-    background: var(--accent); color: #0b0d12;
-    border: none; border-radius: 10px;
-    padding: 12px 28px; font-family: 'Syne', sans-serif;
-    font-size: .85rem; font-weight: 700; letter-spacing: .04em;
-    cursor: pointer;
-    transition: all .15s; transform: translateY(0);
-    box-shadow: 0 0 0 0 #e8ff4740;
-  }
-  .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 28px #e8ff4730;
-  }
-  .btn-primary:active { transform: translateY(0); }
+.tab-count {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .6rem; color: var(--text-muted);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  padding: 1px 7px; border-radius: 10px;
+}
+.tab-btn.active .tab-count { color: var(--accent); border-color: #e8ff4740; background: #e8ff4710; }
 
-  .btn-secondary {
-    background: transparent; border: 1px solid var(--border);
-    color: var(--text); border-radius: 10px;
-    padding: 12px 20px; font-family: 'Syne', sans-serif;
-    font-size: .85rem; font-weight: 600;
-    cursor: pointer; transition: all .15s;
-  }
-  .btn-secondary:hover { border-color: var(--accent2); color: var(--accent2); }
+/* ══════════════════════════════════════
+   PAGES
+══════════════════════════════════════ */
+.page { display: none; padding: 32px 0 48px; animation: fadeUp .4s ease both; }
+.page.active { display: block; }
 
-  .indent-control {
-    display: flex; align-items: center; gap: 8px;
-    font-size: .75rem; color: var(--text-dim);
-    font-family: 'JetBrains Mono', monospace; margin-left: auto;
-  }
-  .indent-control select {
-    background: var(--surface2); border: 1px solid var(--border);
-    color: var(--text); border-radius: 7px; padding: 6px 10px;
-    font-family: 'JetBrains Mono', monospace; font-size: .75rem;
-    cursor: pointer; outline: none;
-  }
+/* ══════════════════════════════════════
+   PAGE 1 — PATENT FORMATTER
+══════════════════════════════════════ */
+.page-title {
+  font-size: clamp(1.6rem, 3.5vw, 2.6rem);
+  font-weight: 800; letter-spacing: -0.04em;
+  line-height: 1.05; margin-bottom: .5rem;
+}
+.page-title .hl { color: var(--accent); }
+.page-desc {
+  color: var(--text-dim);
+  font-size: .88rem; font-weight: 400;
+  max-width: 540px; line-height: 1.6;
+  margin-bottom: 2rem;
+}
 
-  /* ── Status bar ── */
-  .status-bar {
-    display: flex; gap: 16px; flex-wrap: wrap;
-    padding: 12px 0 0; border-top: 1px solid var(--border);
-    font-family: 'JetBrains Mono', monospace; font-size: .68rem;
-    color: var(--text-dim);
-    animation: fadeUp .7s .3s ease both;
-  }
-  .status-item { display: flex; align-items: center; gap: 6px; }
-  .status-pill {
-    background: var(--surface2); border: 1px solid var(--border);
-    border-radius: 5px; padding: 2px 8px; font-size: .65rem;
-  }
-  .status-pill.ok   { border-color: #a8ff7866; color: #a8ff78; background: #a8ff7810; }
-  .status-pill.warn { border-color: #ffb34766; color: #ffb347; background: #ffb34710; }
-  .status-pill.err  { border-color: #ff6b9d66; color: #ff6b9d; background: #ff6b9d10; }
-  .status-pill.info { border-color: #47d4ff66; color: #47d4ff; background: #47d4ff10; }
+/* Rule display */
+.rule-pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .72rem;
+  background: var(--surface2); border: 1px solid var(--border2);
+  padding: 5px 14px; margin-bottom: 2rem;
+  color: var(--text-dim);
+}
+.rule-pill .eg { color: var(--accent); }
+.rule-pill .arr { color: var(--accent2); margin: 0 4px; }
 
-  /* ── JSON syntax tokens ── */
-  .t-key   { color: var(--c-key); }
-  .t-str   { color: var(--c-str); }
-  .t-num   { color: var(--c-num); }
-  .t-bool  { color: var(--c-bool); }
-  .t-null  { color: var(--c-null); }
-  .t-brace { color: var(--c-brace); }
-  .t-comma { color: var(--c-comma); }
+/* Input card */
+.fmt-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 0;
+  margin-bottom: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+.fmt-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent4));
+}
 
-  /* ── Mixed mode: text interleaved with JSON ── */
-  .mixed-json-block {
-    background: #47d4ff0d;
-    border-left: 2px solid var(--accent2);
-    border-radius: 0 6px 6px 0;
-    padding: 2px 8px;
-    display: inline-block;
-    white-space: pre-wrap;
-  }
-  .plain-text-line {
-    color: var(--text-dim);
-    display: block;
-  }
-  .plain-text-line.has-json-fragment {
-    background: #e8ff470a;
-    border-radius: 4px;
-    padding: 1px 4px;
-  }
+.fmt-card-header {
+  padding: 14px 20px;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .62rem; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--text-dim);
+}
+.fmt-card-body { padding: 20px; }
 
-  /* ── Error message ── */
-  .error-msg {
-    color: var(--accent3);
-    display: flex; align-items: flex-start; gap: 10px;
-    padding: 14px; background: #ff6b9d0d; border-radius: 8px;
-    border: 1px solid #ff6b9d30; font-size: .78rem;
-    font-family: 'JetBrains Mono', monospace; line-height: 1.6;
-  }
+.inputs-row {
+  display: grid;
+  grid-template-columns: 1fr 44px 1fr;
+  gap: 12px; align-items: end;
+  margin-bottom: 16px;
+}
+@media(max-width: 520px) {
+  .inputs-row { grid-template-columns: 1fr; }
+  .sep-col { display: none; }
+}
 
-  /* ── Legend ── */
-  .legend {
-    display: flex; flex-wrap: wrap; gap: 10px;
-    padding: 12px 0;
-    animation: fadeUp .7s .35s ease both;
-  }
-  .legend-item {
-    display: flex; align-items: center; gap: 6px;
-    font-size: .65rem; font-family: 'JetBrains Mono', monospace;
-    color: var(--text-dim); background: var(--surface2);
-    border: 1px solid var(--border); border-radius: 6px; padding: 4px 10px;
-  }
-  .legend-swatch { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+.field-group { display: flex; flex-direction: column; gap: 6px; }
+.field-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .6rem; letter-spacing: .15em; text-transform: uppercase;
+  color: var(--text-dim);
+}
 
-  /* ── Copy toast ── */
-  #toast {
-    position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(80px);
-    background: var(--surface2); border: 1px solid var(--accent);
-    color: var(--accent); border-radius: 10px;
-    padding: 10px 22px; font-size: .78rem; font-family: 'JetBrains Mono', monospace;
-    pointer-events: none; z-index: 100;
-    transition: transform .3s cubic-bezier(.34,1.56,.64,1), opacity .3s;
-    opacity: 0;
-  }
-  #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+.fmt-input {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .95rem; letter-spacing: .04em;
+  padding: 10px 14px;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+.fmt-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px #e8ff4712;
+}
+.fmt-input::placeholder { color: var(--text-muted); }
 
-  /* ── Line numbers ── */
-  .output-area .ln { color: var(--text-muted); user-select: none; margin-right: 14px; display: inline-block; min-width: 2ch; text-align: right; }
+.sep-col {
+  display: flex; align-items: flex-end; justify-content: center;
+  padding-bottom: 11px;
+}
+.sep-sym {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .9rem; color: var(--accent); line-height: 1;
+}
 
-  /* ── Collapse toggles ── */
-  .collapse-btn {
-    background: none; border: none; cursor: pointer;
-    color: var(--text-muted); font-size: .65rem;
-    padding: 0 2px; font-family: 'JetBrains Mono', monospace;
-    vertical-align: middle;
-    transition: color .15s;
-  }
-  .collapse-btn:hover { color: var(--accent); }
-  .collapsible { transition: none; }
-  .collapsible.collapsed > .children { display: none; }
-  .collapsed-preview { color: var(--text-muted); font-size: .75rem; }
+.fmt-btn {
+  width: 100%;
+  background: var(--accent); color: #080a0f;
+  border: none;
+  font-family: 'Syne', sans-serif;
+  font-size: .82rem; font-weight: 800;
+  letter-spacing: .06em; text-transform: uppercase;
+  padding: 11px 20px;
+  cursor: pointer;
+  transition: transform .15s, box-shadow .15s;
+  clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
+}
+.fmt-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px #e8ff4728; }
+.fmt-btn:active { transform: translateY(0); }
 
-  /* ── Animations ── */
-  @keyframes fadeDown {
-    from { opacity: 0; transform: translateY(-16px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
+.error-msg {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .7rem; color: var(--accent3);
+  margin-top: 6px; display: none;
+}
+.error-msg.show { display: block; }
 
-  /* Scrollbar */
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+/* Output box */
+.output-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 18px 20px;
+  position: relative;
+  margin-bottom: 1.5rem;
+  min-height: 80px;
+  display: flex; flex-direction: column; justify-content: center;
+}
+.output-box::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, var(--accent2), transparent);
+}
+
+.out-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .58rem; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--text-dim); margin-bottom: 8px;
+}
+.out-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(1rem, 2.5vw, 1.6rem);
+  color: var(--accent); letter-spacing: .08em;
+  word-break: break-all; min-height: 2rem;
+}
+.out-value.empty { color: var(--text-muted); }
+
+.copy-btn {
+  position: absolute; top: 14px; right: 14px;
+  background: transparent; border: 1px solid var(--border2);
+  color: var(--text-dim);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .58rem; letter-spacing: .1em; text-transform: uppercase;
+  padding: 4px 10px; cursor: pointer;
+  transition: all .2s;
+}
+.copy-btn:hover { border-color: var(--accent2); color: var(--accent2); }
+.copy-btn.copied { border-color: #a8ff78; color: #a8ff78; }
+
+/* Breakdown */
+.breakdown {
+  display: none; flex-wrap: wrap; align-items: center; gap: 6px;
+  margin-top: 12px;
+}
+.breakdown.show { display: flex; }
+
+.chunk {
+  background: var(--card); border: 1px solid var(--border2);
+  padding: 5px 12px;
+  font-family: 'JetBrains Mono', monospace;
+  display: flex; flex-direction: column; gap: 2px;
+  animation: pop .25s ease;
+}
+.chunk-lbl { font-size: .52rem; color: var(--text-dim); letter-spacing: .08em; text-transform: uppercase; }
+.chunk-val { font-size: .78rem; color: var(--accent2); }
+
+.joiner-sym {
+  color: var(--accent); font-family: 'JetBrains Mono', monospace;
+  font-size: 1rem; align-self: flex-end; padding-bottom: 6px;
+}
+
+/* History */
+.history-wrap { margin-top: 2rem; }
+.history-head {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 10px;
+}
+.history-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .62rem; letter-spacing: .15em; text-transform: uppercase;
+  color: var(--text-dim);
+}
+.clr-btn {
+  background: none; border: none; color: var(--text-dim);
+  font-family: 'JetBrains Mono', monospace; font-size: .6rem;
+  cursor: pointer; text-transform: uppercase; letter-spacing: .08em;
+  transition: color .2s;
+}
+.clr-btn:hover { color: var(--accent3); }
+
+.history-list { display: flex; flex-direction: column; gap: 6px; }
+.history-item {
+  background: var(--card); border: 1px solid var(--border);
+  padding: 9px 14px;
+  font-family: 'JetBrains Mono', monospace; font-size: .78rem;
+  display: flex; justify-content: space-between; align-items: center;
+  cursor: pointer; transition: border-color .2s;
+  animation: pop .25s ease;
+}
+.history-item:hover { border-color: var(--accent2); }
+.hi-res { color: var(--accent); }
+.hi-action { font-size: .6rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .06em; }
+.no-history { color: var(--text-muted); font-family: 'JetBrains Mono', monospace; font-size: .75rem; }
+
+/* ══════════════════════════════════════
+   PAGE 2 — JSON FORGE
+══════════════════════════════════════ */
+.json-controls {
+  display: flex; gap: 10px; align-items: center;
+  margin-bottom: 20px; flex-wrap: wrap;
+}
+
+.btn-primary {
+  background: var(--accent); color: #080a0f;
+  border: none;
+  font-family: 'Syne', sans-serif; font-size: .82rem; font-weight: 800;
+  letter-spacing: .05em;
+  padding: 11px 26px; cursor: pointer;
+  transition: all .15s; clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px #e8ff4728; }
+
+.btn-secondary {
+  background: transparent; border: 1px solid var(--border2);
+  color: var(--text); font-family: 'Syne', sans-serif;
+  font-size: .78rem; font-weight: 600;
+  padding: 10px 18px; cursor: pointer; transition: all .15s;
+}
+.btn-secondary:hover { border-color: var(--accent2); color: var(--accent2); }
+
+.indent-ctl {
+  display: flex; align-items: center; gap: 8px;
+  font-size: .72rem; color: var(--text-dim);
+  font-family: 'JetBrains Mono', monospace; margin-left: auto;
+}
+.indent-ctl select {
+  background: var(--surface2); border: 1px solid var(--border2);
+  color: var(--text); padding: 8px 12px;
+  font-family: 'JetBrains Mono', monospace; font-size: .72rem;
+  cursor: pointer; outline: none;
+}
+
+/* JSON grid */
+.json-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 20px; margin-bottom: 20px;
+}
+@media(max-width: 860px) { .json-grid { grid-template-columns: 1fr; } }
+
+.panel {
+  background: var(--card);
+  border: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  transition: border-color .2s;
+  position: relative; overflow: hidden;
+}
+.panel::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: var(--border2);
+  transition: background .2s;
+}
+.panel:focus-within { border-color: var(--accent); }
+.panel:focus-within::before { background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+
+.panel-hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--surface2); border-bottom: 1px solid var(--border);
+}
+.panel-lbl {
+  font-size: .62rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--text-dim); display: flex; align-items: center; gap: 8px;
+  transition: color .2s;
+}
+.panel:focus-within .panel-lbl { color: var(--accent); }
+.dot { width: 7px; height: 7px; border-radius: 50%; }
+.dot-y { background: var(--accent); }
+.dot-b { background: var(--accent2); }
+
+.panel-acts { display: flex; gap: 6px; }
+.btn-icon {
+  background: transparent; border: 1px solid var(--border);
+  color: var(--text-dim);
+  padding: 4px 10px; font-size: .6rem;
+  font-family: 'JetBrains Mono', monospace; cursor: pointer;
+  letter-spacing: .05em; text-transform: uppercase;
+  display: flex; align-items: center; gap: 4px;
+  transition: all .15s;
+}
+.btn-icon:hover { border-color: var(--accent); color: var(--accent); }
+.btn-icon.danger:hover { border-color: var(--accent3); color: var(--accent3); }
+
+textarea {
+  flex: 1; min-height: 360px; resize: vertical;
+  background: transparent; border: none; outline: none;
+  padding: 16px; font-family: 'JetBrains Mono', monospace;
+  font-size: .8rem; line-height: 1.75;
+  color: var(--text); caret-color: var(--accent);
+}
+textarea::placeholder { color: var(--text-muted); }
+
+.output-area {
+  flex: 1; min-height: 360px; overflow: auto;
+  padding: 16px; font-family: 'JetBrains Mono', monospace;
+  font-size: .8rem; line-height: 1.75;
+  white-space: pre-wrap; word-break: break-all;
+}
+
+/* Status bar */
+.status-bar {
+  display: flex; gap: 14px; flex-wrap: wrap;
+  padding: 14px 0; border-top: 1px solid var(--border);
+  font-family: 'JetBrains Mono', monospace; font-size: .65rem;
+  color: var(--text-dim);
+}
+.status-item { display: flex; align-items: center; gap: 6px; }
+.status-pill {
+  background: var(--surface2); border: 1px solid var(--border);
+  padding: 2px 9px; font-size: .62rem;
+}
+.status-pill.ok   { border-color: #a8ff7866; color: #a8ff78; background: #a8ff7810; }
+.status-pill.warn { border-color: #ffb34766; color: #ffb347; background: #ffb34710; }
+.status-pill.err  { border-color: #ff6b9d66; color: #ff6b9d; background: #ff6b9d10; }
+.status-pill.info { border-color: #47d4ff66; color: #47d4ff; background: #47d4ff10; }
+
+/* Legend */
+.json-legend {
+  display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 0 4px;
+}
+.legend-item {
+  display: flex; align-items: center; gap: 6px;
+  font-size: .62rem; font-family: 'JetBrains Mono', monospace;
+  color: var(--text-dim); background: var(--surface2);
+  border: 1px solid var(--border); padding: 3px 10px;
+}
+.legend-sw { width: 8px; height: 8px; flex-shrink: 0; }
+
+/* JSON token colours */
+.t-key   { color: var(--c-key); }
+.t-str   { color: var(--c-str); }
+.t-num   { color: var(--c-num); }
+.t-bool  { color: var(--c-bool); }
+.t-null  { color: var(--c-null); }
+.t-brace { color: var(--c-brace); }
+.t-comma { color: var(--c-comma); }
+
+.mixed-json-block {
+  background: #47d4ff0d; border-left: 2px solid var(--accent2);
+  padding: 2px 8px; display: inline-block; white-space: pre-wrap;
+}
+.plain-text-line { color: var(--text-dim); display: block; }
+.plain-text-line.has-json-fragment { background: #e8ff470a; padding: 1px 4px; }
+
+.error-render {
+  color: var(--accent3); display: flex; align-items: flex-start; gap: 10px;
+  padding: 14px; background: #ff6b9d0d; border: 1px solid #ff6b9d30;
+  font-size: .75rem; font-family: 'JetBrains Mono', monospace; line-height: 1.6;
+}
+
+.ln { color: var(--text-muted); user-select: none; margin-right: 14px; display: inline-block; min-width: 2ch; text-align: right; }
+
+/* ══════════════════════════════════════
+   TOAST
+══════════════════════════════════════ */
+#toast {
+  position: fixed; bottom: 28px; left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--surface2); border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 9px 22px; font-size: .72rem;
+  font-family: 'JetBrains Mono', monospace;
+  pointer-events: none; z-index: 999;
+  transition: transform .3s cubic-bezier(.34,1.56,.64,1), opacity .3s;
+  opacity: 0;
+}
+#toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+/* ══════════════════════════════════════
+   ANIMATIONS
+══════════════════════════════════════ */
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pop {
+  from { opacity: 0; transform: scale(.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); }
+::-webkit-scrollbar-thumb:hover { background: var(--border2); }
 </style>
 </head>
 <body>
 
 <div class="blob blob-1"></div>
 <div class="blob blob-2"></div>
+<div class="blob blob-3"></div>
 
 <div class="wrapper">
-  <!-- Header -->
-  <header>
-    <div class="logo">
-      <div class="logo-icon">
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M4 6C4 4.9 4.9 4 6 4H10L12 7H18C19.1 7 20 7.9 20 9V18C20 19.1 19.1 20 18 20H6C4.9 20 4 19.1 4 18V6Z" fill="#0b0d12" stroke="#0b0d12" stroke-width="1.5"/>
-          <text x="8" y="16" font-size="8" fill="#0b0d12" font-family="monospace" font-weight="bold">{}</text>
-        </svg>
-        <!-- simpler icon -->
-        <span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:#0b0d12;font-size:1rem;">{}</span>
-      </div>
-      <div>
-        <div class="logo-name">IP <span>JSON</span><span>FORGE</span></div>
-        <div class="tagline">// format · validate · highlight</div>
-      </div>
-    </div>
-    <div class="header-badges">
-      <span class="badge">v2.0</span>
-      <span class="badge">browser-only</span>
-      <span class="badge">zero deps</span>
-    </div>
-  </header>
 
-  <!-- Controls -->
-  <div class="controls">
-    <button class="btn-primary" onclick="processInput()">⚡ Format & Highlight</button>
-    <button class="btn-secondary" onclick="loadSample('json')">Sample JSON</button>
-    <button class="btn-secondary" onclick="loadSample('mixed')">Sample Mixed</button>
-    <button class="btn-secondary" onclick="clearAll()">Clear</button>
-    <div class="indent-control">
-      <span>Indent</span>
-      <select id="indent">
-        <option value="2">2 spaces</option>
-        <option value="4">4 spaces</option>
-        <option value="1">1 tab (\\t)</option>
-      </select>
+  <!-- ── BRAND HEADER ── -->
+  <div class="top-header">
+    <div class="brand">
+      <div class="brand-icon"><span>IP</span></div>
+      <div class="brand-text">
+        <div class="brand-name">
+          <span class="ip">IP</span><span class="tools">&nbsp;TOOLS</span>
+        </div>
+        <div class="brand-sub">// Intellectual Property Utilities</div>
+      </div>
+    </div>
+    <div class="header-meta">
+      <span class="meta-badge live">● browser-only</span>
+      <span class="meta-badge">v1.0</span>
     </div>
   </div>
 
-  <!-- Main panels -->
-  <div class="main-grid">
-    <!-- Input -->
-    <div class="panel">
-      <div class="panel-header">
-        <div class="panel-label"><div class="dot dot-yellow"></div>Input</div>
-        <div class="panel-actions">
-          <button class="btn-icon" onclick="pasteClipboard()">⌘ Paste</button>
-          <button class="btn-icon danger" onclick="clearInput()">✕ Clear</button>
+  <!-- ── TAB NAV ── -->
+  <div class="nav-strip">
+    <button class="tab-btn active" onclick="switchTab('patent')">
+      <div class="tab-icon">WO</div>
+      Patent ID Formatter
+      <span class="tab-count">Tool 01</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('json')">
+      <div class="tab-icon">{}</div>
+      JSON Forge
+      <span class="tab-count">Tool 02</span>
+    </button>
+  </div>
+
+  <!-- ══════════════════════════════════
+       PAGE 1 — PATENT ID FORMATTER
+  ══════════════════════════════════ -->
+  <div class="page active" id="page-patent">
+
+    <div style="margin-bottom:1.5rem;">
+      <div class="page-title">Format <span class="hl">Patent</span> Numbers</div>
+      <div class="page-desc">Paste two patent IDs — all slashes replaced with hyphens, combined into a single unified string.</div>
+      <div class="rule-pill">
+        <span class="eg">WO/2025/00002</span> + <span class="eg">663437</span>
+        <span class="arr">→</span>
+        <span class="eg">WO-2025-00002-663437</span>
+      </div>
+    </div>
+
+    <div class="fmt-card">
+      <div class="fmt-card-header">
+        <span style="color:var(--accent);margin-right:4px;">◈</span>
+        Input — Two Patent IDs
+      </div>
+      <div class="fmt-card-body">
+        <div class="inputs-row">
+          <div class="field-group">
+            <label class="field-label">First ID</label>
+            <input type="text" class="fmt-input" id="p-input1" placeholder="WO/2025/00002" oninput="patentLive()" />
+          </div>
+          <div class="sep-col">
+            <span class="sep-sym">+</span>
+          </div>
+          <div class="field-group">
+            <label class="field-label">Second ID</label>
+            <input type="text" class="fmt-input" id="p-input2" placeholder="663437" oninput="patentLive()" />
+          </div>
+        </div>
+        <div class="error-msg" id="p-error">⚠ Please fill in both fields.</div>
+        <button class="fmt-btn" onclick="patentConvert()">⚡ Convert & Copy</button>
+      </div>
+    </div>
+
+    <div class="output-box">
+      <div class="out-label">Formatted Result</div>
+      <div class="out-value empty" id="p-output">—</div>
+      <button class="copy-btn" id="p-copybtn" onclick="patentCopy()">Copy</button>
+      <div class="breakdown" id="p-breakdown"></div>
+    </div>
+
+    <div class="history-wrap">
+      <div class="history-head">
+        <span class="history-title">Recent Conversions</span>
+        <button class="clr-btn" onclick="patentClearHistory()">Clear All</button>
+      </div>
+      <div class="history-list" id="p-history"></div>
+    </div>
+
+  </div>
+
+  <!-- ══════════════════════════════════
+       PAGE 2 — JSON FORGE
+  ══════════════════════════════════ -->
+  <div class="page" id="page-json">
+
+    <div style="margin-bottom:1.5rem;">
+      <div class="page-title">JSON <span class="hl">Forge</span></div>
+      <div class="page-desc">Format, validate and syntax-highlight JSON — pure, minified, or mixed with plain text.</div>
+    </div>
+
+    <div class="json-controls">
+      <button class="btn-primary" onclick="jsonProcess()">⚡ Format & Highlight</button>
+      <button class="btn-secondary" onclick="jsonSample('json')">Sample JSON</button>
+      <button class="btn-secondary" onclick="jsonSample('mixed')">Sample Mixed</button>
+      <button class="btn-secondary" onclick="jsonClearAll()">Clear</button>
+      <div class="indent-ctl">
+        <span>Indent</span>
+        <select id="j-indent">
+          <option value="2">2 spaces</option>
+          <option value="4">4 spaces</option>
+          <option value="1">1 tab</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="json-grid">
+      <!-- Input -->
+      <div class="panel">
+        <div class="panel-hdr">
+          <div class="panel-lbl"><div class="dot dot-y"></div>Input</div>
+          <div class="panel-acts">
+            <button class="btn-icon" onclick="jsonPaste()">⌘ Paste</button>
+            <button class="btn-icon danger" onclick="document.getElementById('j-input').value=''">✕ Clear</button>
+          </div>
+        </div>
+        <textarea id="j-input" placeholder="Paste JSON, mixed text+JSON, or any content…&#10;&#10;• Pure JSON object or array&#10;• Text with embedded JSON snippets&#10;• Minified JSON"></textarea>
+      </div>
+      <!-- Output -->
+      <div class="panel">
+        <div class="panel-hdr">
+          <div class="panel-lbl"><div class="dot dot-b"></div>Output</div>
+          <div class="panel-acts">
+            <button class="btn-icon" onclick="jsonCopyOut()">⎘ Copy</button>
+            <button class="btn-icon" onclick="jsonDownload()">↓ Save</button>
+            <button class="btn-icon" onclick="jsonToggleLines()">≡ Lines</button>
+          </div>
+        </div>
+        <div class="output-area" id="j-output">
+          <span style="color:var(--text-muted);font-size:.75rem;">// output appears here…</span>
         </div>
       </div>
-      <textarea id="inputArea" placeholder="Paste your JSON, mixed text+JSON, or any text here…
-
-Examples:
-• Pure JSON object or array
-• Text with embedded JSON snippets
-• Multi-line mixed content
-• Minified JSON on one line"></textarea>
     </div>
 
-    <!-- Output -->
-    <div class="panel">
-      <div class="panel-header">
-        <div class="panel-label"><div class="dot dot-blue"></div>Output</div>
-        <div class="panel-actions">
-          <button class="btn-icon" onclick="copyOutput()">⎘ Copy</button>
-          <button class="btn-icon" onclick="downloadOutput()">↓ Download</button>
-          <button class="btn-icon" onclick="toggleLineNumbers()">≡ Lines</button>
-        </div>
-      </div>
-      <div class="output-area" id="outputArea">
-        <span style="color:var(--text-muted);font-family:'JetBrains Mono',monospace;font-size:.78rem;">
-// Output will appear here after formatting…
-        </span>
-      </div>
+    <div class="status-bar">
+      <div class="status-item">Status <span class="status-pill" id="j-status">idle</span></div>
+      <div class="status-item">Type <span class="status-pill info" id="j-type">—</span></div>
+      <div class="status-item">Size <span class="status-pill" id="j-size">0 B</span></div>
+      <div class="status-item">Keys <span class="status-pill" id="j-keys">—</span></div>
+      <div class="status-item">Depth <span class="status-pill" id="j-depth">—</span></div>
     </div>
+
+    <div class="json-legend">
+      <div class="legend-item"><div class="legend-sw" style="background:var(--c-key)"></div>Key</div>
+      <div class="legend-item"><div class="legend-sw" style="background:var(--c-str)"></div>String</div>
+      <div class="legend-item"><div class="legend-sw" style="background:var(--c-num)"></div>Number</div>
+      <div class="legend-item"><div class="legend-sw" style="background:var(--c-bool)"></div>Boolean</div>
+      <div class="legend-item"><div class="legend-sw" style="background:var(--c-null)"></div>Null</div>
+      <div class="legend-item"><div class="legend-sw" style="background:var(--c-brace)"></div>Bracket/Brace</div>
+      <div class="legend-item"><div class="legend-sw" style="background:var(--accent2);opacity:.6"></div>JSON in text</div>
+      <div class="legend-item"><div class="legend-sw" style="background:var(--text-dim)"></div>Plain text</div>
+    </div>
+
   </div>
 
-  <!-- Status bar -->
-  <div class="status-bar" id="statusBar">
-    <div class="status-item">Status <span class="status-pill" id="statusPill">idle</span></div>
-    <div class="status-item">Type <span class="status-pill info" id="typePill">—</span></div>
-    <div class="status-item">Size <span class="status-pill" id="sizePill">0 B</span></div>
-    <div class="status-item">Keys <span class="status-pill" id="keysPill">—</span></div>
-    <div class="status-item">Depth <span class="status-pill" id="depthPill">—</span></div>
-  </div>
+</div><!-- /wrapper -->
 
-  <!-- Legend -->
-  <div class="legend">
-    <div class="legend-item"><div class="legend-swatch" style="background:var(--c-key)"></div>Key</div>
-    <div class="legend-item"><div class="legend-swatch" style="background:var(--c-str)"></div>String</div>
-    <div class="legend-item"><div class="legend-swatch" style="background:var(--c-num)"></div>Number</div>
-    <div class="legend-item"><div class="legend-swatch" style="background:var(--c-bool)"></div>Boolean</div>
-    <div class="legend-item"><div class="legend-swatch" style="background:var(--c-null)"></div>Null</div>
-    <div class="legend-item"><div class="legend-swatch" style="background:var(--c-brace)"></div>Bracket / Brace</div>
-    <div class="legend-item"><div class="legend-swatch" style="background:var(--accent2);opacity:.6"></div>JSON in text</div>
-    <div class="legend-item"><div class="legend-swatch" style="background:var(--text-dim)"></div>Plain text</div>
-  </div>
-</div>
-
-<div id="toast">✓ Copied to clipboard</div>
+<div id="toast">✓ Copied!</div>
 
 <script>
-// ═══════════════════════════════════════
-//  State
-// ═══════════════════════════════════════
-let showLines = true;
-let lastOutputText = '';
-
-// ═══════════════════════════════════════
-//  Detect input type
-// ═══════════════════════════════════════
-function detectType(raw) {
-  const trimmed = raw.trim();
-  // Pure JSON?
-  try {
-    JSON.parse(trimmed);
-    return 'pure-json';
-  } catch(_) {}
-
-  // Contains JSON fragments?
-  const jsonFragmentRe = /(\{[\s\S]*?\}|\[[\s\S]*?\])/g;
-  const matches = trimmed.match(jsonFragmentRe);
-  if (matches) {
-    for (const m of matches) {
-      try { JSON.parse(m); return 'mixed'; } catch(_) {}
-    }
-  }
-  return 'plain-text';
+/* ═══════════════════════════════════════════
+   TAB SWITCHING
+═══════════════════════════════════════════ */
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const idx = name === 'patent' ? 0 : 1;
+  document.querySelectorAll('.tab-btn')[idx].classList.add('active');
+  document.getElementById('page-' + name).classList.add('active');
 }
 
-// ═══════════════════════════════════════
-//  JSON Syntax Highlighter
-// ═══════════════════════════════════════
+/* ═══════════════════════════════════════════
+   PATENT FORMATTER
+═══════════════════════════════════════════ */
+let patentHistory = JSON.parse(localStorage.getItem('ip_patentHistory') || '[]');
+renderPatentHistory();
+
+function normalizePart(s) {
+  return s.trim().replace(/[\/\\]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+}
+
+function patentResult() {
+  const v1 = document.getElementById('p-input1').value.trim();
+  const v2 = document.getElementById('p-input2').value.trim();
+  if (!v1 || !v2) return null;
+  return normalizePart(v1) + '-' + normalizePart(v2);
+}
+
+function patentLive() {
+  const result = patentResult();
+  const out = document.getElementById('p-output');
+  const bd  = document.getElementById('p-breakdown');
+  document.getElementById('p-error').classList.remove('show');
+
+  if (!result) {
+    out.textContent = '—'; out.classList.add('empty');
+    bd.classList.remove('show'); return;
+  }
+
+  out.textContent = result; out.classList.remove('empty');
+
+  const v1 = document.getElementById('p-input1').value.trim();
+  const v2 = document.getElementById('p-input2').value.trim();
+  const parts = [
+    ...v1.replace(/[\/\\]/g, '-').split('-').filter(Boolean),
+    ...v2.replace(/[\/\\]/g, '-').split('-').filter(Boolean)
+  ];
+
+  bd.innerHTML = '';
+  parts.forEach((p, i) => {
+    const c = document.createElement('div');
+    c.className = 'chunk';
+    c.innerHTML = `<span class="chunk-lbl">Part ${i+1}</span><span class="chunk-val">${p}</span>`;
+    bd.appendChild(c);
+    if (i < parts.length - 1) {
+      const j = document.createElement('div');
+      j.className = 'joiner-sym'; j.textContent = '-'; bd.appendChild(j);
+    }
+  });
+  bd.classList.add('show');
+}
+
+function patentConvert() {
+  const result = patentResult();
+  if (!result) { document.getElementById('p-error').classList.add('show'); return; }
+  document.getElementById('p-error').classList.remove('show');
+
+  const entry = {
+    r1: document.getElementById('p-input1').value.trim(),
+    r2: document.getElementById('p-input2').value.trim(),
+    result, id: Date.now()
+  };
+  patentHistory.unshift(entry);
+  if (patentHistory.length > 10) patentHistory = patentHistory.slice(0, 10);
+  localStorage.setItem('ip_patentHistory', JSON.stringify(patentHistory));
+  renderPatentHistory();
+
+  navigator.clipboard.writeText(result).catch(()=>{});
+  showToast('✓ Copied: ' + result);
+  flashCopyBtn();
+}
+
+function patentCopy() {
+  const v = document.getElementById('p-output').textContent;
+  if (v === '—') return;
+  navigator.clipboard.writeText(v).then(()=>{ showToast('✓ Copied!'); flashCopyBtn(); }).catch(()=>{});
+}
+
+function flashCopyBtn() {
+  const btn = document.getElementById('p-copybtn');
+  btn.textContent = 'Copied!'; btn.classList.add('copied');
+  setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1800);
+}
+
+function renderPatentHistory() {
+  const list = document.getElementById('p-history');
+  list.innerHTML = '';
+  if (!patentHistory.length) {
+    list.innerHTML = '<p class="no-history">No conversions yet.</p>'; return;
+  }
+  patentHistory.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'history-item';
+    div.innerHTML = `<span class="hi-res">${item.result}</span><span class="hi-action">click to copy</span>`;
+    div.onclick = () => {
+      navigator.clipboard.writeText(item.result).catch(()=>{});
+      div.querySelector('.hi-action').textContent = 'copied!';
+      showToast('✓ Copied!');
+      setTimeout(() => div.querySelector('.hi-action').textContent = 'click to copy', 1500);
+    };
+    list.appendChild(div);
+  });
+}
+
+function patentClearHistory() {
+  patentHistory = [];
+  localStorage.removeItem('ip_patentHistory');
+  renderPatentHistory();
+}
+
+/* ═══════════════════════════════════════════
+   JSON FORGE
+═══════════════════════════════════════════ */
+let jsonShowLines = true;
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
 function syntaxHighlight(obj, indent) {
-  const indentStr = indent == 1 ? '\t' : ' '.repeat(indent);
-  const jsonStr = JSON.stringify(obj, null, indentStr);
-  return jsonStr.replace(
+  const iStr = indent == 1 ? '\t' : ' '.repeat(indent);
+  return JSON.stringify(obj, null, iStr).replace(
     /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?|[{}\[\],])/g,
-    match => {
-      if (/^"/.test(match)) {
-        if (/:$/.test(match)) {
-          // key
-          return `<span class="t-key">${escHtml(match)}</span>`;
-        }
-        return `<span class="t-str">${escHtml(match)}</span>`;
-      }
-      if (/true|false/.test(match)) return `<span class="t-bool">${match}</span>`;
-      if (/null/.test(match))       return `<span class="t-null">${match}</span>`;
-      if (/[{}\[\]]/.test(match))   return `<span class="t-brace">${match}</span>`;
-      if (/,/.test(match))          return `<span class="t-comma">${match}</span>`;
-      return `<span class="t-num">${match}</span>`;
+    m => {
+      if (/^"/.test(m)) return /:$/.test(m) ? `<span class="t-key">${escHtml(m)}</span>` : `<span class="t-str">${escHtml(m)}</span>`;
+      if (/true|false/.test(m)) return `<span class="t-bool">${m}</span>`;
+      if (/null/.test(m))       return `<span class="t-null">${m}</span>`;
+      if (/[{}\[\]]/.test(m))   return `<span class="t-brace">${m}</span>`;
+      if (/,/.test(m))          return `<span class="t-comma">${m}</span>`;
+      return `<span class="t-num">${m}</span>`;
     }
   );
 }
 
-function escHtml(str) {
-  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function detectType(raw) {
+  try { JSON.parse(raw.trim()); return 'pure-json'; } catch(_) {}
+  const re = /(\{[\s\S]*?\}|\[[\s\S]*?\])/g; let m;
+  while ((m = re.exec(raw)) !== null) { try { JSON.parse(m[0]); return 'mixed'; } catch(_) {} }
+  return 'plain-text';
 }
 
-// ═══════════════════════════════════════
-//  Count helpers
-// ═══════════════════════════════════════
-function countKeys(obj, depth = 0) {
-  let keys = 0, maxDepth = depth;
-  if (obj !== null && typeof obj === 'object') {
-    for (const k of Object.keys(obj)) {
-      keys++;
-      const [subKeys, subDepth] = countKeys(obj[k], depth + 1);
-      keys += subKeys;
-      maxDepth = Math.max(maxDepth, subDepth);
-    }
-  } else if (Array.isArray(obj)) {
-    for (const item of obj) {
-      const [subKeys, subDepth] = countKeys(item, depth + 1);
-      keys += subKeys;
-      maxDepth = Math.max(maxDepth, subDepth);
-    }
-  }
-  return [keys, maxDepth];
+function addLines(html) {
+  return html.split('\n').map((l,i) => `<span class="ln">${i+1}</span>${l}`).join('\n');
 }
 
-function getDepth(obj) {
-  if (obj === null || typeof obj !== 'object') return 0;
-  if (Object.keys(obj).length === 0) return 1;
-  return 1 + Math.max(...Object.values(obj).map(getDepth));
+function fmtBytes(n) {
+  if (n < 1024) return n+' B';
+  return (n/1024).toFixed(1)+' KB';
 }
 
-function formatBytes(n) {
-  if (n < 1024) return n + ' B';
-  if (n < 1048576) return (n/1024).toFixed(1) + ' KB';
-  return (n/1048576).toFixed(1) + ' MB';
+function getDepth(o) {
+  if (o===null||typeof o!=='object') return 0;
+  const vals = Object.values(o);
+  return vals.length ? 1+Math.max(...vals.map(getDepth)) : 1;
 }
 
-// ═══════════════════════════════════════
-//  Add line numbers
-// ═══════════════════════════════════════
-function addLineNumbers(html) {
-  const lines = html.split('\n');
-  return lines.map((line, i) =>
-    `<span class="ln">${i+1}</span>${line}`
-  ).join('\n');
+function updateStatus(kind, type, size, keys, depth) {
+  const m = { ok:'valid ✓', warn:'mixed ⚠', err:'error ✗', info:'text ℹ' };
+  const p = document.getElementById('j-status');
+  p.textContent = m[kind]||kind; p.className = 'status-pill '+kind;
+  document.getElementById('j-type').textContent = type;
+  document.getElementById('j-size').textContent = size;
+  document.getElementById('j-keys').textContent = keys;
+  document.getElementById('j-depth').textContent = depth;
 }
 
-// ═══════════════════════════════════════
-//  Pure JSON renderer
-// ═══════════════════════════════════════
 function renderPureJSON(raw, indent) {
   const obj = JSON.parse(raw.trim());
-  const highlighted = syntaxHighlight(obj, indent);
-  const depth = getDepth(obj);
-  let totalKeys = 0;
-  const countObj = (o) => {
-    if (o === null || typeof o !== 'object') return;
-    for (const k of Object.keys(o)) { totalKeys++; countObj(o[k]); }
-    if (Array.isArray(o)) o.forEach(countObj);
-  };
-  countObj(obj);
-
-  updateStatus('ok', 'pure JSON', formatBytes(raw.length), totalKeys, depth);
-  return showLines ? addLineNumbers(highlighted) : highlighted;
-}
-
-// ═══════════════════════════════════════
-//  Mixed content renderer
-// ═══════════════════════════════════════
-function renderMixed(raw, indent) {
-  // Split into lines, try to detect JSON blobs spanning multiple lines
-  const lines = raw.split('\n');
-  let result = '';
-  let buffer = '';
-  let jsonCount = 0;
-
-  const flushBuffer = () => {
-    if (!buffer.trim()) { result += escHtml(buffer) + '\n'; buffer = ''; return; }
-    // try parse buffer as JSON
-    const trimBuf = buffer.trim();
-    try {
-      const obj = JSON.parse(trimBuf);
-      // It's JSON!
-      jsonCount++;
-      const highlighted = syntaxHighlight(obj, indent);
-      result += `<span class="mixed-json-block">${highlighted}</span>\n`;
-    } catch(_) {
-      // Plain text — check if line contains inline JSON fragments
-      result += renderMixedLine(buffer) + '\n';
-    }
-    buffer = '';
-  };
-
-  let inBrace = 0, inBracket = 0, collecting = false;
-
-  for (const line of lines) {
-    const stripped = line.trim();
-    for (const ch of stripped) {
-      if (ch === '{') inBrace++;
-      if (ch === '}') inBrace--;
-      if (ch === '[') inBracket++;
-      if (ch === ']') inBracket--;
-    }
-
-    if (!collecting) {
-      const firstChar = stripped[0];
-      if (firstChar === '{' || firstChar === '[') {
-        collecting = true;
-        buffer += line + '\n';
-        if (inBrace === 0 && inBracket === 0) { collecting = false; flushBuffer(); }
-      } else {
-        result += renderMixedLine(line) + '\n';
-      }
-    } else {
-      buffer += line + '\n';
-      if (inBrace <= 0 && inBracket <= 0) { collecting = false; flushBuffer(); }
-    }
-  }
-  if (buffer) flushBuffer();
-
-  updateStatus('warn', 'mixed (text+JSON)', formatBytes(raw.length), jsonCount + ' JSON blocks', '—');
-  return showLines ? result.split('\n').map((l,i)=>`<span class="ln">${i+1}</span>${l}`).join('\n') : result;
+  const hl = syntaxHighlight(obj, indent);
+  let keys = 0;
+  const cnt = o => { if(o&&typeof o==='object'){Object.keys(o).forEach(k=>{keys++;cnt(o[k]);}); if(Array.isArray(o))o.forEach(cnt);} };
+  cnt(obj);
+  updateStatus('ok','pure JSON', fmtBytes(raw.length), keys, getDepth(obj));
+  return jsonShowLines ? addLines(hl) : hl;
 }
 
 function renderMixedLine(line) {
-  // Try to find inline JSON fragments like {...} or [...]
-  const esc = escHtml(line);
-  // Pattern: find {...} or [...] that parse as JSON
   const re = /(\{[^{}]*\}|\[[^\[\]]*\])/g;
-  let result = line;
-  let hasFrag = false;
-  const frags = [];
-  let m;
+  const frags = []; let m;
   while ((m = re.exec(line)) !== null) {
-    try {
-      JSON.parse(m[0]);
-      frags.push({ start: m.index, end: m.index + m[0].length, val: m[0] });
-      hasFrag = true;
-    } catch(_) {}
+    try { JSON.parse(m[0]); frags.push({s:m.index,e:m.index+m[0].length,v:m[0]}); } catch(_) {}
   }
-
-  if (!hasFrag) {
-    return `<span class="plain-text-line">${esc}</span>`;
-  }
-
-  let out = '';
-  let cursor = 0;
-  for (const frag of frags) {
-    out += `<span class="plain-text-line">${escHtml(line.slice(cursor, frag.start))}</span>`;
-    try {
-      const obj = JSON.parse(frag.val);
-      out += `<span class="mixed-json-block">${syntaxHighlight(obj, 2)}</span>`;
-    } catch(_) {
-      out += escHtml(frag.val);
-    }
-    cursor = frag.end;
-  }
-  out += `<span class="plain-text-line">${escHtml(line.slice(cursor))}</span>`;
+  if (!frags.length) return `<span class="plain-text-line">${escHtml(line)}</span>`;
+  let out='', cur=0;
+  frags.forEach(f => {
+    out += `<span class="plain-text-line">${escHtml(line.slice(cur,f.s))}</span>`;
+    try { out += `<span class="mixed-json-block">${syntaxHighlight(JSON.parse(f.v),2)}</span>`; } catch(_){out+=escHtml(f.v);}
+    cur = f.e;
+  });
+  out += `<span class="plain-text-line">${escHtml(line.slice(cur))}</span>`;
   return `<span class="plain-text-line has-json-fragment">${out}</span>`;
 }
 
-// ═══════════════════════════════════════
-//  Plain text renderer
-// ═══════════════════════════════════════
-function renderPlain(raw) {
-  updateStatus('info', 'plain text', formatBytes(raw.length), '—', '—');
+function renderMixed(raw, indent) {
   const lines = raw.split('\n');
-  return lines.map((l, i) =>
-    (showLines ? `<span class="ln">${i+1}</span>` : '') + `<span class="plain-text-line">${escHtml(l)}</span>`
+  let result='', buffer='', inB=0, inBr=0, collecting=false, jcnt=0;
+  const flush = () => {
+    if (!buffer.trim()) { result+=escHtml(buffer)+'\n'; buffer=''; return; }
+    try {
+      const obj = JSON.parse(buffer.trim());
+      jcnt++;
+      result += `<span class="mixed-json-block">${syntaxHighlight(obj,indent)}</span>\n`;
+    } catch(_) { result += renderMixedLine(buffer.trim())+'\n'; }
+    buffer='';
+  };
+  for (const line of lines) {
+    for (const ch of line.trim()) {
+      if(ch==='{')inB++;if(ch==='}')inB--;if(ch==='[')inBr++;if(ch===']')inBr--;
+    }
+    if (!collecting) {
+      const fc = line.trim()[0];
+      if (fc==='{' || fc==='[') {
+        collecting=true; buffer+=line+'\n';
+        if(inB<=0&&inBr<=0){collecting=false;flush();}
+      } else { result += renderMixedLine(line)+'\n'; }
+    } else {
+      buffer+=line+'\n';
+      if(inB<=0&&inBr<=0){collecting=false;flush();}
+    }
+  }
+  if(buffer)flush();
+  updateStatus('warn','mixed (text+JSON)', fmtBytes(raw.length), jcnt+' JSON blocks','—');
+  return jsonShowLines ? result.split('\n').map((l,i)=>`<span class="ln">${i+1}</span>${l}`).join('\n') : result;
+}
+
+function renderPlain(raw) {
+  updateStatus('info','plain text', fmtBytes(raw.length),'—','—');
+  return raw.split('\n').map((l,i)=>
+    (jsonShowLines?`<span class="ln">${i+1}</span>`:'')+`<span class="plain-text-line">${escHtml(l)}</span>`
   ).join('\n');
 }
 
-// ═══════════════════════════════════════
-//  Status updater
-// ═══════════════════════════════════════
-function updateStatus(kind, type, size, keys, depth) {
-  const pill = document.getElementById('statusPill');
-  const kindMap = { ok: 'valid ✓', warn: 'mixed ⚠', err: 'error ✗', info: 'text ℹ' };
-  pill.textContent = kindMap[kind] || kind;
-  pill.className = 'status-pill ' + kind;
-  document.getElementById('typePill').textContent = type;
-  document.getElementById('sizePill').textContent = size;
-  document.getElementById('keysPill').textContent = keys;
-  document.getElementById('depthPill').textContent = depth;
-}
-
-// ═══════════════════════════════════════
-//  Main processor
-// ═══════════════════════════════════════
-function processInput() {
-  const raw = document.getElementById('inputArea').value;
-  const indentVal = parseInt(document.getElementById('indent').value);
-  const out = document.getElementById('outputArea');
-
+function jsonProcess() {
+  const raw = document.getElementById('j-input').value;
+  const indent = parseInt(document.getElementById('j-indent').value);
+  const out = document.getElementById('j-output');
   if (!raw.trim()) {
-    out.innerHTML = '<span style="color:var(--text-muted)">// Nothing to format — paste something above!</span>';
-    updateStatus('info', '—', '0 B', '—', '—');
-    return;
+    out.innerHTML='<span style="color:var(--text-muted);font-size:.75rem;">// Nothing to format…</span>';
+    updateStatus('info','—','0 B','—','—'); return;
   }
-
   const type = detectType(raw);
-  lastOutputText = raw;
-
   try {
-    let html = '';
-    if (type === 'pure-json') {
-      html = renderPureJSON(raw, indentVal);
-    } else if (type === 'mixed') {
-      html = renderMixed(raw, indentVal);
-    } else {
-      html = renderPlain(raw);
-    }
+    let html = type==='pure-json' ? renderPureJSON(raw,indent) :
+               type==='mixed'     ? renderMixed(raw,indent)    :
+                                    renderPlain(raw);
     out.innerHTML = html;
   } catch(e) {
-    out.innerHTML = `<div class="error-msg">⚠ ${escHtml(e.message)}</div>`;
-    updateStatus('err', 'parse error', formatBytes(raw.length), '—', '—');
+    out.innerHTML=`<div class="error-render">⚠ ${escHtml(e.message)}</div>`;
+    updateStatus('err','parse error', fmtBytes(raw.length),'—','—');
   }
 }
 
-// ═══════════════════════════════════════
-//  Actions
-// ═══════════════════════════════════════
-async function pasteClipboard() {
+async function jsonPaste() {
   try {
-    const text = await navigator.clipboard.readText();
-    document.getElementById('inputArea').value = text;
-    processInput();
+    const t = await navigator.clipboard.readText();
+    document.getElementById('j-input').value = t;
+    jsonProcess();
   } catch(_) { alert('Clipboard permission denied — paste manually.'); }
 }
 
-function copyOutput() {
-  const out = document.getElementById('outputArea');
-  const text = out.innerText || out.textContent;
-  navigator.clipboard.writeText(text).then(() => showToast('✓ Copied!'));
+function jsonCopyOut() {
+  const t = document.getElementById('j-output').innerText || document.getElementById('j-output').textContent;
+  navigator.clipboard.writeText(t).then(()=>showToast('✓ Copied!'));
 }
 
-function downloadOutput() {
-  const out = document.getElementById('outputArea');
-  const text = out.innerText || out.textContent;
-  const blob = new Blob([text], { type: 'application/json' });
+function jsonDownload() {
+  const t = document.getElementById('j-output').innerText || document.getElementById('j-output').textContent;
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'formatted.json';
-  a.click();
+  a.href = URL.createObjectURL(new Blob([t],{type:'application/json'}));
+  a.download='formatted.json'; a.click();
 }
 
-function toggleLineNumbers() {
-  showLines = !showLines;
-  processInput();
+function jsonToggleLines() { jsonShowLines=!jsonShowLines; jsonProcess(); }
+
+function jsonClearAll() {
+  document.getElementById('j-input').value='';
+  document.getElementById('j-output').innerHTML='<span style="color:var(--text-muted);font-size:.75rem;">// output appears here…</span>';
+  updateStatus('info','—','0 B','—','—');
 }
 
-function clearAll() {
-  document.getElementById('inputArea').value = '';
-  document.getElementById('outputArea').innerHTML =
-    '<span style="color:var(--text-muted);font-family:\'JetBrains Mono\',monospace;font-size:.78rem;">// Output will appear here after formatting…</span>';
-  updateStatus('info', '—', '0 B', '—', '—');
-}
-
-function clearInput() {
-  document.getElementById('inputArea').value = '';
-}
-
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2000);
-}
-
-// ═══════════════════════════════════════
-//  Sample data
-// ═══════════════════════════════════════
-const samples = {
-  json: `{
-  "user": {
-    "id": 1042,
-    "name": "Arjun Mehta",
-    "email": "arjun@example.com",
-    "active": true,
-    "score": 98.6,
-    "roles": ["admin", "editor"],
-    "address": {
-      "city": "Mumbai",
-      "pincode": "400001",
-      "country": "India"
-    },
-    "lastLogin": null
-  },
-  "meta": {
-    "version": "3.1.0",
-    "generated": "2026-03-27T10:00:00Z",
-    "tags": ["production", "verified"]
-  }
-}`,
-  mixed: `API Response Log — 2026-03-27
-
-[INFO] Request received from client 10.0.0.42
-[INFO] Auth token validated successfully
-
-Response payload:
-{"status": "success", "code": 200, "message": "Data fetched"}
-
-User details returned:
-{"id": 7821, "name": "Priya Sharma", "plan": "pro", "credits": 450}
-
-[WARN] Rate limit approaching: {"limit": 1000, "used": 892, "reset_at": "2026-03-27T12:00:00Z"}
-
-[INFO] Processing complete. Total time: 142ms
-[DEBUG] Cache hit ratio: 0.87
-Error log: {"error": null, "warnings": ["disk_usage > 80%"]}
-
-End of log.`
+const jsonSamples = {
+  json: `{\n  "patent": {\n    "id": "WO-2025-00002-663437",\n    "title": "Advanced IP Management System",\n    "applicant": "Inventra Corp",\n    "filing_date": "2025-01-15",\n    "status": "pending",\n    "claims": 24,\n    "priority": true,\n    "classes": ["G06F", "H04L"],\n    "inventors": [\n      {"name": "Arjun Mehta", "country": "IN"},\n      {"name": "Sara Kim",   "country": "KR"}\n    ],\n    "fees_paid": null\n  },\n  "meta": {"version": "2.1", "source": "WIPO"}\n}`,
+  mixed: `Patent Search Results — IP TOOLS\n\nQuery: WO/2025 batch\n\nResult 1:\n{"id": "WO-2025-00001", "title": "Quantum Encryption Module", "status": "granted"}\n\nResult 2:\n{"id": "WO-2025-00002", "title": "IP Management System", "status": "pending", "claims": 24}\n\n[INFO] Total results: 2 | {"query_time_ms": 42, "cached": true}\n\nEnd of results.`
 };
 
-function loadSample(type) {
-  document.getElementById('inputArea').value = samples[type];
-  processInput();
+function jsonSample(t) { document.getElementById('j-input').value=jsonSamples[t]; jsonProcess(); }
+
+document.getElementById('j-input').addEventListener('keydown', e => {
+  if ((e.ctrlKey||e.metaKey) && e.key==='Enter') { e.preventDefault(); jsonProcess(); }
+});
+
+document.getElementById('j-input').addEventListener('input', function() {
+  document.getElementById('j-size').textContent = fmtBytes(this.value.length);
+});
+
+/* ═══════════════════════════════════════════
+   SHARED TOAST
+═══════════════════════════════════════════ */
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2000);
 }
-
-// ═══════════════════════════════════════
-//  Auto-format on Ctrl+Enter
-// ═══════════════════════════════════════
-document.getElementById('inputArea').addEventListener('keydown', e => {
-  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-    e.preventDefault();
-    processInput();
-  }
-});
-
-// Real-time char count in status
-document.getElementById('inputArea').addEventListener('input', function() {
-  const len = this.value.length;
-  document.getElementById('sizePill').textContent = formatBytes(len);
-});
 </script>
 </body>
 </html>
