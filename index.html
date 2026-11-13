@@ -3757,6 +3757,813 @@ body::after {
   border-radius: 6px;
 }
 
+
+/* ═════════════════════════════════════════════════════════════════════
+   NOKIA 1100 INSPIRED HORIZONTAL APP LAUNCHER & GEN-Z FUSION v5.1
+   ═════════════════════════════════════════════════════════════════════ */
+
+/* Full-width Launcher Layout */
+.app.nokia-mode-layout {
+  grid-template-columns: 1fr;
+  grid-template-areas: "topbar" "main" "statusbar";
+}
+
+.app.nokia-mode-layout .sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 290px;
+  z-index: 1000;
+  transform: translateX(-100%);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
+}
+
+.app.nokia-mode-layout .sidebar.open {
+  transform: translateX(0);
+}
+
+/* Nokia Topbar Status Deck */
+.nokia-status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 24px;
+  background: rgba(11, 16, 32, 0.85);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.15);
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+  position: sticky;
+  top: var(--topbar-h);
+  z-index: 45;
+}
+
+.nokia-status-left, .nokia-status-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.nokia-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  border-radius: 9999px;
+  color: #C4B5FD;
+}
+
+.nokia-signal-meter {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 12px;
+}
+
+.nokia-signal-bar {
+  width: 2.5px;
+  background: var(--neon-cyan);
+  border-radius: 1px;
+}
+
+.nokia-battery-meter {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.nokia-battery-box {
+  width: 20px;
+  height: 10px;
+  border: 1.5px solid var(--neon-green);
+  border-radius: 2px;
+  padding: 1px;
+  display: flex;
+}
+
+.nokia-battery-fill {
+  width: 100%;
+  height: 100%;
+  background: var(--neon-green);
+  border-radius: 1px;
+}
+
+.nokia-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: rgba(139, 92, 246, 0.18);
+  border: 1px solid var(--accent-primary);
+  border-radius: 20px;
+  color: #fff;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.nokia-toggle-btn:hover {
+  background: var(--accent-primary);
+  color: #fff;
+  box-shadow: 0 0 16px var(--accent-glow);
+  transform: translateY(-1px);
+}
+
+.nokia-toggle-btn.active {
+  background: var(--neon-green);
+  color: #070913;
+  border-color: var(--neon-green);
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.4);
+}
+
+/* ═════════════════════════════════════════════════════════════════════
+   NOKIA 1100 HERO SHOWCASE CAROUSEL
+   ═════════════════════════════════════════════════════════════════════ */
+.nokia-hero-section {
+  position: relative;
+  padding: 24px 24px 16px 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.nokia-hero-deck {
+  background: linear-gradient(135deg, rgba(17, 24, 39, 0.75) 0%, rgba(15, 23, 42, 0.85) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  border-radius: 24px;
+  padding: 28px 32px;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(139, 92, 246, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.nokia-hero-deck::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #8B5CF6, #06B6D4, #10B981, #EC4899);
+}
+
+.nokia-hero-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.nokia-hero-title-area {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nokia-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 8px;
+  background: rgba(139, 92, 246, 0.2);
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  color: #C4B5FD;
+}
+
+.nokia-hero-index-badge {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: rgba(6, 182, 212, 0.15);
+  border: 1px solid rgba(6, 182, 212, 0.35);
+  color: #67E8F9;
+  letter-spacing: 1px;
+}
+
+/* Hero Carousel Content Stage */
+.nokia-hero-stage {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 28px;
+  min-height: 180px;
+}
+
+.nokia-hero-icon-box {
+  width: 96px;
+  height: 96px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.25) 0%, rgba(6, 182, 212, 0.2) 100%);
+  border: 2px solid rgba(139, 92, 246, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.8rem;
+  box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
+  position: relative;
+  flex-shrink: 0;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nokia-hero-icon-box::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 30px;
+  border: 1px dashed rgba(139, 92, 246, 0.3);
+  animation: rotateGlow 12s linear infinite;
+}
+
+@keyframes rotateGlow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.nokia-hero-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nokia-hero-app-name {
+  font-family: var(--font-sans);
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nokia-hero-app-desc {
+  font-size: 0.96rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  max-width: 680px;
+}
+
+.nokia-hero-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.nokia-tag {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+}
+
+/* Nokia Hero Actions & Navi-Pad */
+.nokia-hero-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.nokia-launch-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 28px;
+  background: linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%);
+  color: #fff;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.45);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+.nokia-launch-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 12px 30px rgba(139, 92, 246, 0.6);
+  background: linear-gradient(135deg, #9333EA 0%, #7C3AED 100%);
+}
+
+.nokia-launch-btn:active {
+  transform: translateY(0);
+}
+
+.nokia-nav-pad {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.35);
+  padding: 4px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.nokia-nav-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-family: var(--font-mono);
+  transition: all 0.15s ease;
+}
+
+.nokia-nav-btn:hover {
+  background: rgba(139, 92, 246, 0.3);
+  border-color: var(--accent-primary);
+  color: #fff;
+}
+
+.nokia-hero-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.nokia-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.18);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.nokia-dot.active {
+  width: 24px;
+  background: linear-gradient(90deg, #8B5CF6, #06B6D4);
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.6);
+}
+
+/* ═════════════════════════════════════════════════════════════════════
+   HORIZONTAL APPLICATION CAROUSEL SECTIONS
+   ═════════════════════════════════════════════════════════════════════ */
+.nokia-carousel-section {
+  padding: 16px 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.nokia-carousel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.nokia-carousel-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nokia-carousel-icon {
+  font-size: 1.25rem;
+  color: var(--neon-cyan);
+}
+
+.nokia-carousel-title {
+  font-family: var(--font-sans);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.2px;
+}
+
+.nokia-carousel-count {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: rgba(139, 92, 246, 0.15);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  color: #C4B5FD;
+}
+
+.nokia-carousel-nav-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nokia-index-tracker {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.nokia-arrow-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(17, 24, 39, 0.8);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.15s ease;
+}
+
+.nokia-arrow-btn:hover {
+  background: rgba(139, 92, 246, 0.35);
+  border-color: var(--accent-primary);
+  color: #fff;
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
+}
+
+/* Horizontal Track */
+.nokia-carousel-track {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  padding: 8px 4px 16px 4px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.nokia-carousel-track::-webkit-scrollbar {
+  height: 6px;
+}
+
+.nokia-carousel-track::-webkit-scrollbar-track {
+  background: rgba(11, 16, 32, 0.5);
+  border-radius: 3px;
+}
+
+.nokia-carousel-track::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.3);
+  border-radius: 3px;
+}
+
+.nokia-carousel-track::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.6);
+}
+
+/* Modern Gen-Z Squircle App Card */
+.nokia-app-card {
+  flex: 0 0 190px;
+  width: 190px;
+  scroll-snap-align: start;
+  background: linear-gradient(135deg, rgba(17, 24, 39, 0.82) 0%, rgba(15, 23, 42, 0.9) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.18);
+  border-radius: 18px;
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+  cursor: pointer;
+  position: relative;
+  outline: none;
+  backdrop-filter: blur(12px);
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.nokia-app-card:hover, .nokia-app-card:focus-visible, .nokia-app-card.nokia-active-item {
+  transform: translateY(-4px) scale(1.03);
+  border-color: var(--accent-primary);
+  background: linear-gradient(135deg, rgba(30, 27, 75, 0.85) 0%, rgba(17, 24, 39, 0.95) 100%);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 20px rgba(139, 92, 246, 0.4);
+}
+
+.nokia-app-card:focus-visible {
+  outline: 2px solid var(--neon-cyan);
+  outline-offset: 2px;
+}
+
+.nokia-app-card-fav {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  font-size: 0.95rem;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: 2px;
+  line-height: 1;
+  transition: all 0.15s ease;
+  z-index: 2;
+}
+
+.nokia-app-card-fav:hover {
+  transform: scale(1.25);
+  color: #F59E0B;
+}
+
+.nokia-app-card-fav.active {
+  color: #F59E0B;
+  text-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
+}
+
+.nokia-app-squircle {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(6, 182, 212, 0.15) 100%);
+  border: 1.5px solid rgba(139, 92, 246, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.65rem;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+  margin-top: 4px;
+}
+
+.nokia-app-card:hover .nokia-app-squircle {
+  transform: scale(1.08);
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 16px rgba(6, 182, 212, 0.4);
+}
+
+.nokia-app-name {
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.25;
+  height: 2.5em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.nokia-app-badge {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.nokia-app-card:hover .nokia-app-badge {
+  background: rgba(139, 92, 246, 0.25);
+  border-color: rgba(139, 92, 246, 0.5);
+  color: #E0E7FF;
+}
+
+/* Empty Carousel Notice */
+.nokia-empty-carousel {
+  padding: 24px;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  background: rgba(17, 24, 39, 0.4);
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  width: 100%;
+}
+
+/* ═════════════════════════════════════════════════════════════════════
+   RETRO NOKIA 1100 MONOCHROME LCD MODE
+   ═════════════════════════════════════════════════════════════════════ */
+body.nokia-1100-mode {
+  --bg-primary: #9BBC0F !important;
+  --bg-secondary: #8BAC0F !important;
+  --bg-tertiary: #8BAC0F !important;
+  --surface-primary: #8BAC0F !important;
+  --surface-secondary: #9BBC0F !important;
+  --surface-elevated: #9BBC0F !important;
+  --text-primary: #0F380F !important;
+  --text-secondary: #306230 !important;
+  --text-tertiary: #306230 !important;
+  --accent-primary: #0F380F !important;
+  --accent-secondary: #306230 !important;
+  --border-subtle: rgba(15, 56, 15, 0.2) !important;
+  --border-default: rgba(15, 56, 15, 0.4) !important;
+  color: #0F380F !important;
+  font-family: 'JetBrains Mono', monospace !important;
+}
+
+/* Scanlines overlay */
+body.nokia-1100-mode::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgba(15, 56, 15, 0.05), rgba(15, 56, 15, 0.05) 1px, transparent 1px, transparent 2px);
+  z-index: 99999;
+}
+
+body.nokia-1100-mode .nokia-hero-deck {
+  background: #8BAC0F !important;
+  border: 3px solid #0F380F !important;
+  box-shadow: inset 0 0 10px rgba(15, 56, 15, 0.3) !important;
+  border-radius: 8px !important;
+}
+
+body.nokia-1100-mode .nokia-hero-icon-box {
+  background: #9BBC0F !important;
+  border: 2px solid #0F380F !important;
+  color: #0F380F !important;
+  box-shadow: none !important;
+  border-radius: 8px !important;
+}
+
+body.nokia-1100-mode .nokia-hero-icon-box::after {
+  display: none !important;
+}
+
+body.nokia-1100-mode .nokia-app-card {
+  background: #8BAC0F !important;
+  border: 2px solid #0F380F !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+  color: #0F380F !important;
+}
+
+body.nokia-1100-mode .nokia-app-card:hover,
+body.nokia-1100-mode .nokia-app-card:focus-visible,
+body.nokia-1100-mode .nokia-app-card.nokia-active-item {
+  background: #0F380F !important;
+  color: #9BBC0F !important;
+  transform: none !important;
+}
+
+body.nokia-1100-mode .nokia-app-card:hover .nokia-app-name,
+body.nokia-1100-mode .nokia-app-card:hover .nokia-app-squircle,
+body.nokia-1100-mode .nokia-app-card:hover .nokia-app-badge {
+  color: #9BBC0F !important;
+}
+
+body.nokia-1100-mode .nokia-app-squircle {
+  background: #9BBC0F !important;
+  border: 1px solid #0F380F !important;
+  color: #0F380F !important;
+  border-radius: 6px !important;
+}
+
+body.nokia-1100-mode .nokia-launch-btn {
+  background: #0F380F !important;
+  color: #9BBC0F !important;
+  border: 2px solid #0F380F !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+}
+
+body.nokia-1100-mode .topbar,
+body.nokia-1100-mode .nokia-status-bar,
+body.nokia-1100-mode .statusbar {
+  background: #8BAC0F !important;
+  border-color: #0F380F !important;
+  color: #0F380F !important;
+}
+
+body.nokia-1100-mode .brand-mark {
+  background: #0F380F !important;
+  color: #9BBC0F !important;
+}
+
+/* Nokia Soft Key Bar (Sticky at bottom on retro mode) */
+.nokia-softkey-bar {
+  display: none;
+}
+
+body.nokia-1100-mode .nokia-softkey-bar {
+  display: flex;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 38px;
+  background: #0F380F;
+  color: #9BBC0F;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82rem;
+  font-weight: 700;
+  z-index: 10000;
+  letter-spacing: 1px;
+}
+
+.nokia-softkey-left, .nokia-softkey-center, .nokia-softkey-right {
+  cursor: pointer;
+  padding: 4px 12px;
+  border-radius: 4px;
+  transition: all 0.1s ease;
+}
+
+.nokia-softkey-left:hover, .nokia-softkey-center:hover, .nokia-softkey-right:hover {
+  background: #9BBC0F;
+  color: #0F380F;
+}
+
+/* ═════════════════════════════════════════════════════════════════════
+   ALL APPLICATIONS SCREEN (SEARCHABLE SMARTPHONE APP DRAWER)
+   ═════════════════════════════════════════════════════════════════════ */
+.all-apps-drawer-header {
+  padding: 24px 24px 12px 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.all-apps-search-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(17, 24, 39, 0.85);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  border-radius: 16px;
+  padding: 10px 18px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.all-apps-search-inp {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-family: var(--font-sans);
+  font-size: 1.05rem;
+  width: 100%;
+  outline: none;
+}
+
+.all-apps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+  padding: 20px 24px 40px 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .nokia-hero-stage {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 16px;
+  }
+  .nokia-hero-icon-box {
+    margin: 0 auto;
+  }
+  .nokia-hero-actions {
+    align-items: center;
+    width: 100%;
+  }
+  .nokia-launch-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .nokia-app-card {
+    flex: 0 0 160px;
+    width: 160px;
+    padding: 12px 10px;
+  }
+  .all-apps-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+    padding: 16px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -3812,179 +4619,62 @@ body::after {
     </div>
   </header>
 
+  <!-- NOKIA STATUS DECK -->
+  <div class="nokia-status-bar" id="nokiaStatusBar">
+    <div class="nokia-status-left">
+      <div class="nokia-signal-meter" title="100% Client-Side Local Signal">
+        <span class="nokia-signal-bar" style="height:4px;"></span>
+        <span class="nokia-signal-bar" style="height:6px;"></span>
+        <span class="nokia-signal-bar" style="height:9px;"></span>
+        <span class="nokia-signal-bar" style="height:12px;"></span>
+      </div>
+      <span class="nokia-status-pill">⚡ IP-NET 5G • 0ms</span>
+      <span style="color:var(--text-tertiary);">|</span>
+      <span id="nokiaStatusClock" style="font-weight:700;color:var(--neon-cyan);">17:45</span>
+    </div>
+    <div class="nokia-status-right">
+      <button class="nokia-toggle-btn" id="nokiaRetroToggleBtn" title="Toggle Classic Monochrome Nokia 1100 Mode (Alt+N)">
+        📱 Retro Nokia Mode
+      </button>
+      <button class="nokia-toggle-btn" id="nokiaSoundToggleBtn" title="Toggle Keypad Audio Beep Effects">
+        🔔 Sound: ON
+      </button>
+      <a href="#tools" class="nokia-toggle-btn" id="nokiaAllAppsBtn" data-nav="tools" title="Open All Applications Drawer">
+        ▦ All Apps (71)
+      </a>
+      <div class="nokia-battery-meter" title="100% Local-First Private Battery">
+        <span style="font-size:0.7rem;font-weight:700;color:var(--neon-green);">100%</span>
+        <div class="nokia-battery-box">
+          <div class="nokia-battery-fill"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
   <!-- MAIN -->
   <main class="main" id="mainContent">
-    <section class="view" id="view-dashboard" data-view="dashboard">
-      <!-- GEN-Z HERO -->
-      <div class="genz-hero">
-        <div class="genz-hero-top">
-          <div class="genz-status-pill">
-            <span class="pulse-dot"></span>
-            <span id="heroGreetingTime">Good Day, Dev • All Systems Operational</span>
+    <section class="view active" id="view-dashboard" data-view="dashboard">
+      <!-- NOKIA 1100 HERO SHOWCASE CAROUSEL -->
+      <div class="nokia-hero-section">
+        <div class="nokia-hero-deck">
+          <div class="nokia-hero-header">
+            <div class="nokia-hero-title-area">
+              <span class="nokia-hero-badge">NOKIA 1100 MENU SYSTEM</span>
+              <span style="color:var(--text-secondary);font-size:0.85rem;font-weight:600;">Swipe, scroll, or use ◄ ► arrows to navigate</span>
+            </div>
+            <div class="nokia-hero-index-badge" id="nokiaHeroIndexBadge">[ 📱 01 / 08 ]</div>
           </div>
-          <div style="display:flex;gap:6px;">
-            <span class="spotlight-tag glow-purple">⚡ v5.0 Super App</span>
-            <span class="spotlight-tag glow-cyan">🔒 Local-First</span>
-            <span class="spotlight-tag glow-green">🚀 71 Super Tools</span>
+          <div class="nokia-hero-stage" id="nokiaHeroStage">
+            <!-- Dynamically populated by IPTools.nokia.renderHeroStage() -->
           </div>
-        </div>
-        <h1>Build. Test. <span class="genz-gradient-text">Ship.</span></h1>
-        <p class="genz-hero-sub">
-          The Gen-Z Developer Super App — 71 client-side utilities, intelligent JSON workspace with Zoho ERP detection, REST API tester, media studio & crypto tools.
-        </p>
-
-        <!-- HERO SEARCH BAR -->
-        <div class="genz-search-bar" id="dashSearch">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          <input type="text" placeholder="Search 71 developer tools or press ⌘K..." id="dashSearchInput" aria-label="Search tools">
-          <kbd>⌘K</kbd>
-        </div>
-
-        <!-- QUICK LAUNCH PILLS -->
-        <div class="genz-pills-row">
-          <span style="font-size:.72rem;color:var(--text-muted);align-self:center;margin-right:4px;">Daily Drivers:</span>
-          <button class="genz-quick-pill" data-open="json-forge">{} JSON Forge</button>
-          <button class="genz-quick-pill" data-open="api-tester">⚡ API Tester</button>
-          <button class="genz-quick-pill" data-open="media-downloader">▶ Media Studio</button>
-          <button class="genz-quick-pill" data-open="jwt-studio">🔐 JWT Studio</button>
-          <button class="genz-quick-pill" data-open="qr-generator">▦ QR Generator</button>
-          <button class="genz-quick-pill" data-open="image-compressor">🖼 Image Compressor</button>
-          <button class="genz-quick-pill" data-open="markdown-studio">✍ Markdown Studio</button>
-          <button class="genz-quick-pill" data-open="curl-to-fetch">⇄ cURL to Fetch</button>
-          <button class="genz-quick-pill" data-open="uuid-generator"># UUID Generator</button>
+          <div class="nokia-hero-dots" id="nokiaHeroDots"></div>
         </div>
       </div>
 
-      <!-- GEN-Z LIVE STATS -->
-      <div class="genz-stats-grid">
-        <div class="genz-stat-card">
-          <div class="stat-icon" style="background:rgba(139,92,246,0.18);border-color:rgba(139,92,246,0.35);color:#C084FC;">⚡</div>
-          <div class="stat-data">
-            <div class="stat-number" id="dashToolCount">71</div>
-            <div class="stat-label">Developer Super Tools</div>
-          </div>
-        </div>
-        <div class="genz-stat-card">
-          <div class="stat-icon" style="background:rgba(6,182,212,0.18);border-color:rgba(6,182,212,0.35);color:#38BDF8;">🗂️</div>
-          <div class="stat-data">
-            <div class="stat-number">16</div>
-            <div class="stat-label">Tool Categories</div>
-          </div>
-        </div>
-        <div class="genz-stat-card">
-          <div class="stat-icon" style="background:rgba(236,72,153,0.18);border-color:rgba(236,72,153,0.35);color:#F472B6;">★</div>
-          <div class="stat-data">
-            <div class="stat-number" id="dashFavCount">0</div>
-            <div class="stat-label">Active Favorites</div>
-          </div>
-        </div>
-        <div class="genz-stat-card">
-          <div class="stat-icon" style="background:rgba(16,185,129,0.18);border-color:rgba(16,185,129,0.35);color:#34D399;">🔒</div>
-          <div class="stat-data">
-            <div class="stat-number" style="color:var(--accent-neon);font-size:1.15rem;font-weight:700;">100% Private</div>
-            <div class="stat-label">IndexedDB & Zero Uploads</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- GEN-Z SPOTLIGHT GRID -->
-      <div class="genz-spotlight-grid">
-        <!-- SPOTLIGHT 1: JSON FORGE -->
-        <div class="genz-spotlight-card featured-primary">
-          <div>
-            <div class="spotlight-tags">
-              <span class="spotlight-tag glow-purple">⚡ Super Workspace</span>
-              <span class="spotlight-tag">Zoho ERP Intelligence</span>
-              <span class="spotlight-tag">Dynamic Table</span>
-              <span class="spotlight-tag">Dual Diff</span>
-            </div>
-            <div class="spotlight-title">JSON Intelligence Workspace v5.0</div>
-            <div class="spotlight-desc">
-              Professional IDE workspace featuring automatic business entity recognition for Purchase Orders, Sales Orders, Item Masters, and API error envelopes. Includes in-tree node editing, dynamic table generator, Draft-07 schema generator, and visual diff.
-            </div>
-          </div>
-          <div class="spotlight-actions">
-            <button class="btn btn-primary btn-sm" id="heroOpenJsonForge">Open JSON Forge →</button>
-            <button class="btn btn-secondary btn-sm" id="heroSamplePO">Load PO</button>
-            <button class="btn btn-secondary btn-sm" id="heroSampleSO">Load SO</button>
-            <button class="btn btn-secondary btn-sm" id="heroOpenDiff">Compare Diff</button>
-          </div>
-        </div>
-
-        <!-- SPOTLIGHT 2: API TESTER -->
-        <div class="genz-spotlight-card">
-          <div>
-            <div class="spotlight-tags">
-              <span class="spotlight-tag glow-cyan">⚡ New Super Tool</span>
-              <span class="spotlight-tag">REST HTTP Client</span>
-              <span class="spotlight-tag">Zero Proxy</span>
-              <span class="spotlight-tag">Live Metrics</span>
-            </div>
-            <div class="spotlight-title">REST API Request Tester</div>
-            <div class="spotlight-desc">
-              Execute real HTTP calls directly from the browser. Supports GET, POST, PUT, DELETE, custom request headers, query parameters, latency timing, and instant bridge to JSON Forge.
-            </div>
-          </div>
-          <div class="spotlight-actions">
-            <button class="btn btn-neon btn-sm" id="heroOpenApiTester">Launch API Tester →</button>
-            <button class="btn btn-secondary btn-sm" id="heroOpenCurl">cURL to Fetch</button>
-          </div>
-        </div>
-
-        <!-- SPOTLIGHT 3: MEDIA & VIDEO STUDIO -->
-        <div class="genz-spotlight-card">
-          <div>
-            <div class="spotlight-tags">
-              <span class="spotlight-tag glow-green">⚡ Media Studio</span>
-              <span class="spotlight-tag">YouTube Inspector</span>
-              <span class="spotlight-tag">Thumbnails (1080p)</span>
-              <span class="spotlight-tag">Permitted Streams</span>
-            </div>
-            <div class="spotlight-title">Media & Video Studio</div>
-            <div class="spotlight-desc">
-              Analyze video URLs, extract official high-res thumbnails (MaxRes 1080p, SD, HQ), interactive embed preview, and stream permitted user-authorized media.
-            </div>
-          </div>
-          <div class="spotlight-actions">
-            <button class="btn btn-primary btn-sm" id="heroOpenMediaStudio">Open Media Studio →</button>
-          </div>
-        </div>
-
-        <!-- SPOTLIGHT 4: JWT STUDIO -->
-        <div class="genz-spotlight-card">
-          <div>
-            <div class="spotlight-tags">
-              <span class="spotlight-tag glow-purple">⚡ Security Studio</span>
-              <span class="spotlight-tag">HMAC-SHA256 Signer</span>
-              <span class="spotlight-tag">Web Crypto</span>
-              <span class="spotlight-tag">Claim Inspector</span>
-            </div>
-            <div class="spotlight-title">JWT Studio & Generator</div>
-            <div class="spotlight-desc">
-              Decode JWT tokens, inspect expiration time remaining, edit custom payload claims, and cryptographically generate signed tokens using browser Web Crypto HMAC.
-            </div>
-          </div>
-          <div class="spotlight-actions">
-            <button class="btn btn-secondary btn-sm" id="heroOpenJwtStudio">Open JWT Studio →</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- CATEGORY FILTER PILLS BAR -->
-      <div class="genz-category-filter-bar" id="dashCatFilterBar"></div>
-
-      <div class="dash-stats" id="dashStats" style="display:none;"></div>
-      <div class="dash-section" id="dashRecentSection">
-        <div class="dash-section-head"><h2><span class="sec-icon">◷</span> Recently Used</h2><button class="sec-link" data-nav="recent">View all →</button></div>
-        <div class="tool-grid" id="dashRecent"></div>
-      </div>
-      <div class="dash-section" id="dashFavSection">
-        <div class="dash-section-head"><h2><span class="sec-icon">★</span> Favorites</h2><button class="sec-link" data-nav="favorites">View all →</button></div>
-        <div class="tool-grid" id="dashFav"></div>
-      </div>
-      <div class="dash-section">
-        <div class="dash-section-head"><h2><span class="sec-icon">▦</span> All Tools</h2><button class="sec-link" data-nav="tools">Browse directory →</button></div>
-        <div class="tool-grid" id="dashAll"></div>
+      <!-- DYNAMIC HORIZONTAL APPLICATION CAROUSELS -->
+      <div id="nokiaCarouselsContainer">
+        <!-- Rendered dynamically by IPTools.nokia.renderDashboardCarousels() -->
       </div>
     </section>
 
@@ -5023,6 +5713,7 @@ IPTools.nav = (() => {
     if(view==='tool' && opts.toolId){ openTool(opts.toolId); return; }
     show(view);
     if(view==='dashboard') IPTools.views.renderDashboard();
+    if (window.IPTools && IPTools.nokia) IPTools.nokia.init();
     if(view==='tools') IPTools.views.renderDirectory();
     if(view==='favorites') IPTools.views.renderFavorites(); IPTools.views.updateFavCount();
     if(view==='recent') IPTools.views.renderRecent();
@@ -5034,6 +5725,7 @@ IPTools.nav = (() => {
     if(!tool){ IPTools.toast.error('Tool not found'); return; }
     IPTools.state.currentTool = id;
     IPTools.recent.add(id);
+    if (window.IPTools && IPTools.nokia) IPTools.nokia.renderRecentCarousel();
     document.getElementById('wsIcon').textContent = tool.icon;
     document.getElementById('wsTitle').textContent = tool.name;
     document.getElementById('wsDesc').textContent = tool.description;
@@ -5134,197 +5826,16 @@ IPTools.views = {
     if (el) el.textContent = IPTools.favorites.all().length;
   },
   renderDashboard: () => {
-    // Dynamic Greeting
-    const hour = new Date().getHours();
-    const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
-    const heroTimeEl = document.getElementById('heroGreetingTime');
-    if (heroTimeEl) heroTimeEl.textContent = `${greet}, Dev • All Systems Operational`;
-
-    // Bind Quick Launch Pills
-    document.querySelectorAll('.genz-quick-pill').forEach(btn => {
-      btn.onclick = () => {
-        const toolId = btn.dataset.open;
-        if (toolId) IPTools.nav.openTool(toolId);
-      };
-    });
-
-    // Bind Spotlight buttons
-    document.getElementById('heroOpenJsonForge')?.addEventListener('click', () => IPTools.nav.openTool('json-forge'));
-    document.getElementById('heroOpenApiTester')?.addEventListener('click', () => IPTools.nav.openTool('api-tester'));
-    document.getElementById('heroOpenCurl')?.addEventListener('click', () => IPTools.nav.openTool('curl-to-fetch'));
-    document.getElementById('heroOpenMediaStudio')?.addEventListener('click', () => IPTools.nav.openTool('media-downloader'));
-    document.getElementById('heroOpenJwtStudio')?.addEventListener('click', () => IPTools.nav.openTool('jwt-studio'));
-    document.getElementById('heroOpenDiff')?.addEventListener('click', () => {
-      IPTools.nav.openTool('json-forge');
-      setTimeout(() => { document.querySelector('[data-jftab="diff"]')?.click(); }, 150);
-    });
-
-    // PO Sample
-    document.getElementById('heroSamplePO')?.addEventListener('click', () => {
-      IPTools.nav.openTool('json-forge');
-      setTimeout(() => {
-        const ed = document.getElementById('jfEditorInput');
-        if (ed) {
-          ed.value = JSON.stringify({
-            purchaseorder: {
-              purchaseorder_number: "PO-2026-001",
-              vendor_name: "Apex Electronics Ltd",
-              date: "2026-11-13",
-              delivery_date: "2026-11-25",
-              status: "confirmed",
-              currency_symbol: "$",
-              line_items: [
-                { item_id: "CHIP-01", name: "Gen-Z Microcontroller MCU-64", quantity: 50, rate: 120, item_total: 6000 },
-                { item_id: "CBL-02", name: "High-Speed Optical Cable", quantity: 100, rate: 15, item_total: 1500 }
-              ],
-              sub_total: 7500,
-              tax_total: 675,
-              total: 8175
-            }
-          }, null, 2);
-          ed.dispatchEvent(new Event('input'));
-        }
-      }, 120);
-    });
-
-    // SO Sample
-    document.getElementById('heroSampleSO')?.addEventListener('click', () => {
-      IPTools.nav.openTool('json-forge');
-      setTimeout(() => {
-        const ed = document.getElementById('jfEditorInput');
-        if (ed) {
-          ed.value = JSON.stringify({
-            salesorder: {
-              salesorder_number: "SO-8842",
-              customer_name: "Cyber Systems Corp",
-              date: "2026-11-13",
-              status: "open",
-              currency_symbol: "$",
-              line_items: [
-                { item_id: "SRV-01", name: "Cloud Native Deployment", quantity: 1, rate: 8500, item_total: 8500 }
-              ],
-              sub_total: 8500,
-              tax_total: 765,
-              total: 9265
-            }
-          }, null, 2);
-          ed.dispatchEvent(new Event('input'));
-        }
-      }, 120);
-    });
-
-    // Update Counters
-    const all = IPTools.registry.all();
-    const toolCountEl = document.getElementById('dashToolCount');
-    if (toolCountEl) toolCountEl.textContent = all.length;
-    IPTools.views.updateFavCount();
-
-    // Populate Category Filter Pills
-    const catFilterBar = document.getElementById('dashCatFilterBar');
-    if (catFilterBar) {
-      const categories = IPTools.registry.categories();
-
-      const renderAllGrid = (cat = 'all') => {
-        const allGrid = document.getElementById('dashAll');
-        if (!allGrid) return;
-        allGrid.innerHTML = '';
-        const filtered = cat === 'all' ? all : all.filter(t => t.category === cat);
-        filtered.forEach(t => allGrid.appendChild(IPTools.renderToolCard(t)));
-      };
-
-      catFilterBar.innerHTML = `
-        <button class="cat-filter-pill active" data-cat="all">All Tools <span class="cat-count">(${all.length})</span></button>
-        ${categories.map(c => {
-          const count = all.filter(t => t.category === c).length;
-          const safeC = IPTools.utils.escHTML(c);
-          return `<button class="cat-filter-pill" data-cat="${safeC}">${safeC} <span class="cat-count">(${count})</span></button>`;
-        }).join('')}
-      `;
-
-      catFilterBar.querySelectorAll('.cat-filter-pill').forEach(btn => {
-        btn.onclick = () => {
-          catFilterBar.querySelectorAll('.cat-filter-pill').forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          renderAllGrid(btn.dataset.cat);
-        };
-      });
-
-      renderAllGrid('all');
-    }
-
-    // Populate Recently Used
-    const recentSection = document.getElementById('dashRecentSection');
-    const recentTools = IPTools.state.recent.map(r => IPTools.registry.get(r.id)).filter(Boolean).slice(0, 6);
-    if (recentTools.length && recentSection) {
-      recentSection.classList.remove('hidden');
-      const grid = document.getElementById('dashRecent');
-      if (grid) {
-        grid.innerHTML = '';
-        recentTools.forEach(t => grid.appendChild(IPTools.renderToolCard(t)));
-      }
-    } else if (recentSection) {
-      recentSection.classList.add('hidden');
-    }
-
-    // Populate Favorites
-    const favSection = document.getElementById('dashFavSection');
-    const favTools = IPTools.state.favorites.map(id => IPTools.registry.get(id)).filter(Boolean).slice(0, 6);
-    if (favTools.length && favSection) {
-      favSection.classList.remove('hidden');
-      const grid = document.getElementById('dashFav');
-      if (grid) {
-        grid.innerHTML = '';
-        favTools.forEach(t => grid.appendChild(IPTools.renderToolCard(t)));
-      }
-    } else if (favSection) {
-      favSection.classList.add('hidden');
+    if (window.IPTools && IPTools.nokia) {
+      IPTools.nokia.renderHeroStage();
+      IPTools.nokia.renderDashboardCarousels();
+      IPTools.views.updateFavCount();
     }
   },
   renderDirectory: () => {
-    const cats = ['All',...IPTools.registry.categories()];
-    const catsContainer = document.getElementById('dirCategories');
-    catsContainer.innerHTML = '';
-    cats.forEach((c,i)=>{
-      const btn = document.createElement('button');
-      btn.className = 'dir-cat-btn'+(i===0?' active':'');
-      btn.dataset.cat = c; btn.textContent = c;
-      btn.addEventListener('click',()=>{
-        IPTools.utils.$$('.dir-cat-btn').forEach(b=>b.classList.remove('active'));
-        btn.classList.add('active');
-        IPTools.views.applyDirFilter();
-      });
-      catsContainer.appendChild(btn);
-    });
-    const searchInput = document.getElementById('dirSearchInput');
-    if(searchInput && !searchInput.dataset.bound){
-      searchInput.dataset.bound = '1';
-      searchInput.addEventListener('input',IPTools.utils.debounce(()=>IPTools.views.applyDirFilter(),120));
+    if (window.IPTools && IPTools.nokia) {
+      IPTools.nokia.setupAllAppsView();
     }
-    const sortSel = document.getElementById('dirSort');
-    if(sortSel && !sortSel.dataset.bound){
-      sortSel.dataset.bound = '1';
-      sortSel.addEventListener('change',()=>IPTools.views.applyDirFilter());
-    }
-    IPTools.views.applyDirFilter();
-  },
-  applyDirFilter: () => {
-    const searchInput = document.getElementById('dirSearchInput');
-    const query = searchInput?searchInput.value:'';
-    const activeCat = document.querySelector('.dir-cat-btn.active');
-    const cat = activeCat?activeCat.dataset.cat:'All';
-    const sort = document.getElementById('dirSort').value;
-    let tools = query?IPTools.registry.search(query):IPTools.registry.all();
-    if(cat && cat!=='All') tools = tools.filter(t=>t.category===cat);
-    if(sort==='alphabetical') tools = tools.slice().sort((a,b)=>a.name.localeCompare(b.name));
-    else if(sort==='recent'){ const order={}; IPTools.state.recent.forEach((r,i)=>order[r.id]=i); tools = tools.slice().sort((a,b)=>(order[a.id]??999)-(order[b.id]??999)); }
-    else if(sort==='most-used') tools = tools.slice().sort((a,b)=>(IPTools.state.usage[b.id]||0)-(IPTools.state.usage[a.id]||0));
-    const grid = document.getElementById('dirGrid'); grid.innerHTML='';
-    document.getElementById('dirCount').textContent = `${tools.length} tool${tools.length===1?'':'s'} found`;
-    if(!tools.length){
-      grid.innerHTML = `<div class="dir-empty" style="grid-column:1/-1"><div class="de-icon">◌</div><div class="de-title">No tools found</div><div class="de-desc">Try a different search term or category.</div><div class="de-tags"><span class="de-tag">JSON</span><span class="de-tag">encode</span><span class="de-tag">JWT</span><span class="de-tag">regex</span></div></div>`;
-      return;
-    }
-    tools.forEach(t=>grid.appendChild(IPTools.renderToolCard(t)));
   },
   renderFavorites: () => {
     const grid = document.getElementById('favGrid'); grid.innerHTML='';
@@ -13131,6 +13642,731 @@ IPTools.registry.register({
   }
 });
 
+/* ═════════════════════════════════════════════════════════════════════
+   NOKIA 1100 HORIZONTAL APP LAUNCHER JAVASCRIPT ENGINE
+   ═════════════════════════════════════════════════════════════════════ */
+
+IPTools.nokia = (() => {
+  const { el, escHTML } = IPTools.utils;
+
+  const state = {
+    heroIndex: 0,
+    retroMode: false,
+    soundEnabled: true,
+    heroTools: [
+      {
+        id: 'json-forge',
+        name: 'JSON Intelligence Forge',
+        category: 'JSON & API',
+        icon: '{}',
+        desc: 'Advanced JSON development environment featuring Smart View (PO, SO, Invoices, Items), IDE code editor, Tree Explorer, Schema Generator, and Semantic Diff.',
+        tags: ['SMART-VIEW', 'PO-SO-DETECT', 'TREE-VIEW', 'SCHEMA-GEN', 'DIFF-COMPARE'],
+        badge: 'FLAGSHIP IDE'
+      },
+      {
+        id: 'api-tester',
+        name: 'REST API Request Tester',
+        category: 'JSON & API',
+        icon: '⚡',
+        desc: 'Native browser HTTP client supporting GET, POST, PUT, DELETE with query params, header presets, live latency timing, and instant bridge to JSON Forge.',
+        tags: ['ZERO-PROXY', 'LIVE-METRICS', 'REST-CLIENT', 'CORS-DIRECT'],
+        badge: 'NEW SUPER TOOL'
+      },
+      {
+        id: 'jwt-studio',
+        name: 'JWT Studio',
+        category: 'Security',
+        icon: '🔐',
+        desc: 'Interactive token decoder and HMAC-SHA256 signer powered by native Web Crypto API. Inspect headers, payload claims, and verify signatures offline.',
+        tags: ['WEB-CRYPTO', 'HS256-SIGNER', 'CLAIMS-INSPECT', 'OFFLINE'],
+        badge: 'SECURITY'
+      },
+      {
+        id: 'media-downloader',
+        name: 'Media & Video Studio',
+        category: 'Media',
+        icon: '▶',
+        desc: 'Permitted media inspector. Extract YouTube video IDs, official high-res thumbnails (MaxRes 1080p, SD, HQ), interactive embed player, and stream permitted user content.',
+        tags: ['1080P-THUMBNAILS', 'EMBED-PLAYER', 'PERMITTED-STREAM', 'YOUTUBE'],
+        badge: 'MEDIA STUDIO'
+      },
+      {
+        id: 'qr-generator',
+        name: 'QR Code Generator',
+        category: 'Generators',
+        icon: '▦',
+        desc: 'Client-side offline QR code generator supporting URLs, Wi-Fi network configuration, plain text, and emails with custom colors and instant PNG/SVG export.',
+        tags: ['OFFLINE-CANVAS', 'SVG-EXPORT', 'WIFI-CONFIG', 'HIGH-RES'],
+        badge: 'GENERATORS'
+      },
+      {
+        id: 'image-compressor',
+        name: 'Image Compressor & Converter',
+        category: 'Image',
+        icon: '🖼',
+        desc: 'HTML5 Canvas image optimizer. Adjust quality compression slider, scale dimensions, convert between WebP, JPEG, and PNG with real-time file size savings meter.',
+        tags: ['CLIENT-SIDE', 'WEBP-CONVERT', 'CANVAS-RESIZE', 'SAVINGS-METER'],
+        badge: 'IMAGE STUDIO'
+      },
+      {
+        id: 'markdown-studio',
+        name: 'Markdown Studio',
+        category: 'Text',
+        icon: '✍',
+        desc: 'Split-pane live Markdown editor with GitHub Flavored Markdown (GFM) preview, formatting toolbar, live word and character counters, and HTML/MD export.',
+        tags: ['LIVE-PREVIEW', 'GFM-PARSER', 'WORD-COUNT', 'HTML-EXPORT'],
+        badge: 'TEXT & DOCS'
+      },
+      {
+        id: 'curl-to-fetch',
+        name: 'cURL to Fetch Converter',
+        category: 'JSON & API',
+        icon: '⇄',
+        desc: 'Converts raw cURL terminal commands into clean JavaScript fetch (async/await and promise chains), Axios, or Python requests code with one-click copy.',
+        tags: ['CURL-PARSER', 'JS-FETCH', 'AXIOS', 'PYTHON-REQUESTS'],
+        badge: 'CONVERTER'
+      }
+    ]
+  };
+
+  // Synthesize authentic Nokia 8-bit keypad audio beep
+  const playBeep = (freq = 900, duration = 0.035) => {
+    if (!state.soundEnabled) return;
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime);
+      gain.gain.setValueAtTime(0.06, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + duration);
+    } catch (_) {}
+  };
+
+  // Toggle Retro Nokia 1100 Mode
+  const toggleRetroMode = (forceState) => {
+    state.retroMode = typeof forceState === 'boolean' ? forceState : !state.retroMode;
+    document.body.classList.toggle('nokia-1100-mode', state.retroMode);
+    IPTools.storage.set('nokia_retro_mode', state.retroMode);
+
+    const toggleBtn = document.getElementById('nokiaRetroToggleBtn');
+    if (toggleBtn) {
+      toggleBtn.classList.toggle('active', state.retroMode);
+      toggleBtn.innerHTML = state.retroMode 
+        ? '📱 Retro LCD: ON' 
+        : '📱 Retro Nokia Mode';
+    }
+
+    const softbar = document.getElementById('nokiaSoftkeyBar');
+    if (softbar) {
+      softbar.style.display = state.retroMode ? 'flex' : 'none';
+    }
+
+    playBeep(state.retroMode ? 1200 : 600, 0.08);
+  };
+
+  // Toggle Sound FX
+  const toggleSound = () => {
+    state.soundEnabled = !state.soundEnabled;
+    IPTools.storage.set('nokia_sound_enabled', state.soundEnabled);
+    const btn = document.getElementById('nokiaSoundToggleBtn');
+    if (btn) {
+      btn.textContent = state.soundEnabled ? '🔔 Sound: ON' : '🔕 Sound: OFF';
+      btn.classList.toggle('active', state.soundEnabled);
+    }
+    if (state.soundEnabled) playBeep(980, 0.05);
+  };
+
+  // Render Nokia Hero Showcase Stage
+  const renderHeroStage = () => {
+    const stage = document.getElementById('nokiaHeroStage');
+    const indexBadge = document.getElementById('nokiaHeroIndexBadge');
+    const dotsContainer = document.getElementById('nokiaHeroDots');
+    if (!stage) return;
+
+    const current = state.heroTools[state.heroIndex];
+    if (indexBadge) {
+      indexBadge.textContent = `[ 📱 0${state.heroIndex + 1} / 0${state.heroTools.length} ]`;
+    }
+
+    stage.innerHTML = `
+      <div class="nokia-hero-icon-box" id="nokiaHeroIcon">${escHTML(current.icon)}</div>
+      <div class="nokia-hero-meta">
+        <div class="nokia-hero-app-name">
+          <span>${escHTML(current.name)}</span>
+          <span class="spotlight-tag glow-purple" style="font-size:0.68rem;padding:2px 8px;">${escHTML(current.badge)}</span>
+        </div>
+        <div class="nokia-hero-app-desc">${escHTML(current.desc)}</div>
+        <div class="nokia-hero-tags">
+          <span class="nokia-tag" style="color:var(--neon-cyan);">${escHTML(current.category)}</span>
+          ${current.tags.map(t => `<span class="nokia-tag">#${escHTML(t)}</span>`).join('')}
+        </div>
+      </div>
+      <div class="nokia-hero-actions">
+        <button class="nokia-launch-btn" id="nokiaHeroLaunchBtn">
+          <span>⏎ Launch App</span>
+        </button>
+        <div class="nokia-nav-pad">
+          <button class="nokia-nav-btn" id="nokiaHeroPrevBtn" title="Previous App (◄)">◄</button>
+          <button class="nokia-nav-btn" id="nokiaHeroCenterBtn" title="Select / Open (Enter)">◉</button>
+          <button class="nokia-nav-btn" id="nokiaHeroNextBtn" title="Next App (►)">►</button>
+        </div>
+      </div>
+    `;
+
+    // Render Dots
+    if (dotsContainer) {
+      dotsContainer.innerHTML = state.heroTools.map((_, i) => 
+        `<div class="nokia-dot ${i === state.heroIndex ? 'active' : ''}" data-hero-dot="${i}"></div>`
+      ).join('');
+
+      dotsContainer.querySelectorAll('[data-hero-dot]').forEach(d => {
+        d.onclick = () => {
+          state.heroIndex = parseInt(d.dataset.heroDot, 10);
+          playBeep(850, 0.03);
+          renderHeroStage();
+        };
+      });
+    }
+
+    // Bind Hero Actions
+    document.getElementById('nokiaHeroLaunchBtn').onclick = () => {
+      playBeep(1100, 0.06);
+      IPTools.nav.openTool(current.id);
+    };
+
+    document.getElementById('nokiaHeroCenterBtn').onclick = () => {
+      playBeep(1100, 0.06);
+      IPTools.nav.openTool(current.id);
+    };
+
+    document.getElementById('nokiaHeroPrevBtn').onclick = () => {
+      state.heroIndex = (state.heroIndex - 1 + state.heroTools.length) % state.heroTools.length;
+      playBeep(800, 0.03);
+      renderHeroStage();
+    };
+
+    document.getElementById('nokiaHeroNextBtn').onclick = () => {
+      state.heroIndex = (state.heroIndex + 1) % state.heroTools.length;
+      playBeep(850, 0.03);
+      renderHeroStage();
+    };
+  };
+
+  // Create an individual horizontal app card
+  const createAppCard = (tool) => {
+    const isFav = IPTools.favorites.isFav(tool.id);
+    const isTrending = ['json-forge','api-tester','jwt-studio','media-downloader','qr-generator','image-compressor','curl-to-fetch'].includes(tool.id);
+
+    const card = el('div', {
+      class: 'nokia-app-card',
+      'data-app-id': tool.id,
+      tabindex: '0',
+      role: 'button',
+      'aria-label': `Launch ${tool.name}`
+    });
+
+    card.innerHTML = `
+      <button class="nokia-app-card-fav ${isFav ? 'active' : ''}" data-fav="${escHTML(tool.id)}" title="${isFav ? 'Remove from favorites' : 'Add to favorites'}">${isFav ? '★' : '☆'}</button>
+      <div class="nokia-app-squircle">${escHTML(tool.icon || '◈')}</div>
+      <div class="nokia-app-name">${escHTML(tool.name)}</div>
+      <div class="nokia-app-badge">${escHTML(tool.category)}</div>
+    `;
+
+    // Click handler
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('[data-fav]')) return;
+      playBeep(1050, 0.05);
+      IPTools.nav.openTool(tool.id);
+    });
+
+    // Favorite handler
+    const favBtn = card.querySelector('[data-fav]');
+    if (favBtn) {
+      favBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const nowFav = IPTools.favorites.toggle(tool.id);
+        favBtn.textContent = nowFav ? '★' : '☆';
+        favBtn.classList.toggle('active', nowFav);
+        playBeep(nowFav ? 1200 : 700, 0.04);
+        renderFavoritesCarousel();
+        IPTools.views.updateFavCount();
+      });
+    }
+
+    return card;
+  };
+
+  // Helper to build a horizontal carousel section
+  const buildCarouselSection = (container, { id, title, icon, tools, emptyText }) => {
+    const section = el('div', { class: 'nokia-carousel-section', id: `section-${id}` });
+
+    section.innerHTML = `
+      <div class="nokia-carousel-header">
+        <div class="nokia-carousel-title-group">
+          <span class="nokia-carousel-icon">${escHTML(icon)}</span>
+          <h2 class="nokia-carousel-title">${escHTML(title)}</h2>
+          <span class="nokia-carousel-count">${tools.length} apps</span>
+        </div>
+        <div class="nokia-carousel-nav-controls">
+          <span class="nokia-index-tracker" id="tracker-${id}">[ 01 / ${tools.length > 0 ? (tools.length < 10 ? '0' + tools.length : tools.length) : '00'} ]</span>
+          <button class="nokia-arrow-btn" data-carousel-prev="${id}" title="Scroll Left (◄)">◄</button>
+          <button class="nokia-arrow-btn" data-carousel-next="${id}" title="Scroll Right (►)">►</button>
+        </div>
+      </div>
+      <div class="nokia-carousel-track" id="track-${id}"></div>
+    `;
+
+    const track = section.querySelector(`#track-${id}`);
+
+    if (tools.length === 0) {
+      track.innerHTML = `<div class="nokia-empty-carousel">${escHTML(emptyText || 'No tools in this category yet.')}</div>`;
+    } else {
+      tools.forEach(t => track.appendChild(createAppCard(t)));
+    }
+
+    // Attach Wheel Listener for natural horizontal exploration
+    track.addEventListener('wheel', (e) => {
+      if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+        e.preventDefault();
+        track.scrollLeft += e.deltaY;
+      }
+    }, { passive: false });
+
+    // Attach Left / Right Arrow Buttons
+    const prevBtn = section.querySelector(`[data-carousel-prev="${id}"]`);
+    const nextBtn = section.querySelector(`[data-carousel-next="${id}"]`);
+    const tracker = section.querySelector(`#tracker-${id}`);
+
+    if (prevBtn) {
+      prevBtn.onclick = () => {
+        track.scrollBy({ left: -220, behavior: 'smooth' });
+        playBeep(780, 0.025);
+      };
+    }
+
+    if (nextBtn) {
+      nextBtn.onclick = () => {
+        track.scrollBy({ left: 220, behavior: 'smooth' });
+        playBeep(840, 0.025);
+      };
+    }
+
+    // Update index tracker on scroll
+    let scrollTimeout;
+    track.addEventListener('scroll', () => {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        const itemWidth = 206; // 190 width + 16 gap
+        const index = Math.min(tools.length, Math.max(1, Math.round(track.scrollLeft / itemWidth) + 1));
+        const indexStr = index < 10 ? '0' + index : '' + index;
+        const totalStr = tools.length < 10 ? '0' + tools.length : '' + tools.length;
+        if (tracker && tools.length > 0) tracker.textContent = `[ ${indexStr} / ${totalStr} ]`;
+      }, 80);
+    }, { passive: true });
+
+    container.appendChild(section);
+  };
+
+  // Render Favorites Carousel
+  const renderFavoritesCarousel = () => {
+    const track = document.getElementById('track-favorites');
+    const tracker = document.getElementById('tracker-favorites');
+    if (!track) return;
+
+    const favIds = IPTools.favorites.all();
+    const favTools = favIds.map(id => IPTools.registry.get(id)).filter(Boolean);
+
+    track.innerHTML = '';
+    if (favTools.length === 0) {
+      track.innerHTML = '<div class="nokia-empty-carousel">★ Star any tool across carousels to pin it to your Favorites quick-dock.</div>';
+      if (tracker) tracker.textContent = '[ 00 / 00 ]';
+    } else {
+      favTools.forEach(t => track.appendChild(createAppCard(t)));
+      if (tracker) {
+        const totalStr = favTools.length < 10 ? '0' + favTools.length : '' + favTools.length;
+        tracker.textContent = `[ 01 / ${totalStr} ]`;
+      }
+    }
+  };
+
+  // Render Recently Used Carousel
+  const renderRecentCarousel = () => {
+    const track = document.getElementById('track-recent');
+    const tracker = document.getElementById('tracker-recent');
+    if (!track) return;
+
+    const recentItems = (IPTools.recent && typeof IPTools.recent.all === 'function') ? IPTools.recent.all() : (IPTools.state.recent || []);
+    const recentTools = recentItems.map(item => typeof item === 'string' ? IPTools.registry.get(item) : IPTools.registry.get(item.id)).filter(Boolean);
+
+    track.innerHTML = '';
+    if (recentTools.length === 0) {
+      track.innerHTML = '<div class="nokia-empty-carousel">Clock in! Tools you launch will automatically register in this recent carousel.</div>';
+      if (tracker) tracker.textContent = '[ 00 / 00 ]';
+    } else {
+      recentTools.forEach(t => track.appendChild(createAppCard(t)));
+      if (tracker) {
+        const totalStr = recentTools.length < 10 ? '0' + recentTools.length : '' + recentTools.length;
+        tracker.textContent = `[ 01 / ${totalStr} ]`;
+      }
+    }
+  };
+
+  // Initialize and Render all Horizontal Carousels on Dashboard
+  const renderDashboardCarousels = () => {
+    const container = document.getElementById('nokiaCarouselsContainer');
+    if (!container) return;
+    container.innerHTML = '';
+
+    const allTools = IPTools.registry.all();
+
+    // 1. Favorites Carousel
+    const favIds = IPTools.favorites.all();
+    const favTools = favIds.map(id => IPTools.registry.get(id)).filter(Boolean);
+    buildCarouselSection(container, {
+      id: 'favorites',
+      title: 'Starred Favorites',
+      icon: '★',
+      tools: favTools,
+      emptyText: 'Star any tool across carousels to pin it to your Favorites quick-dock.'
+    });
+
+    // 2. Recently Used Carousel
+    const recentItems = (IPTools.recent && typeof IPTools.recent.all === 'function') ? IPTools.recent.all() : (IPTools.state.recent || []);
+    const recentTools = recentItems.map(item => typeof item === 'string' ? IPTools.registry.get(item) : IPTools.registry.get(item.id)).filter(Boolean);
+    buildCarouselSection(container, {
+      id: 'recent',
+      title: 'Recently Launched',
+      icon: '⏱',
+      tools: recentTools,
+      emptyText: 'Tools you launch will automatically register in this recent carousel.'
+    });
+
+    // 3. Quick Access (Curated popular super tools)
+    const quickIds = ['json-forge', 'api-tester', 'jwt-studio', 'media-downloader', 'qr-generator', 'image-compressor', 'markdown-studio', 'curl-to-fetch', 'code-minifier', 'base64-file', 'diff-viewer', 'pdf-tools'];
+    const quickTools = quickIds.map(id => IPTools.registry.get(id)).filter(Boolean);
+    buildCarouselSection(container, {
+      id: 'quick-access',
+      title: 'Quick Access Super Tools',
+      icon: '⚡',
+      tools: quickTools
+    });
+
+    // 4. Category Definition Mappings
+    const categoryConfigs = [
+      {
+        id: 'json-api',
+        title: 'JSON & API Development',
+        icon: '{}',
+        matcher: (t) => ['JSON & API', 'JSON'].includes(t.category) || t.id.startsWith('json') || t.id === 'api-tester' || t.id === 'curl-to-fetch'
+      },
+      {
+        id: 'text-encoding',
+        title: 'Text & Encoding',
+        icon: '🔤',
+        matcher: (t) => ['Text', 'Encoding'].includes(t.category) && !['json-forge', 'api-tester'].includes(t.id)
+      },
+      {
+        id: 'web-dev',
+        title: 'Web Development',
+        icon: '🌐',
+        matcher: (t) => ['Web', 'Formatting', 'Regex', 'Color'].includes(t.category)
+      },
+      {
+        id: 'security',
+        title: 'Security & Cryptography',
+        icon: '🛡️',
+        matcher: (t) => ['Security'].includes(t.category) || t.id === 'jwt-studio'
+      },
+      {
+        id: 'image-media',
+        title: 'Image & Media Studio',
+        icon: '🎨',
+        matcher: (t) => ['Media', 'Image'].includes(t.category)
+      },
+      {
+        id: 'conversion-data',
+        title: 'File Conversion & Data',
+        icon: '📊',
+        matcher: (t) => ['Conversion', 'Data'].includes(t.category) || t.id.includes('to-')
+      },
+      {
+        id: 'generators',
+        title: 'Generators',
+        icon: '⚙️',
+        matcher: (t) => ['Generators'].includes(t.category) || t.id.includes('-gen')
+      },
+      {
+        id: 'utilities',
+        title: 'Utilities & Calculations',
+        icon: '🧮',
+        matcher: (t) => ['Utility', 'Math', 'Date & Time', 'Network', 'Patent / IP'].includes(t.category)
+      }
+    ];
+
+    categoryConfigs.forEach(cfg => {
+      const matched = allTools.filter(cfg.matcher);
+      buildCarouselSection(container, {
+        id: cfg.id,
+        title: cfg.title,
+        icon: cfg.icon,
+        tools: matched
+      });
+    });
+  };
+
+  // Setup Global Keyboard Navigation for Nokia 1100 Launcher
+  const setupKeyboardNav = () => {
+    document.addEventListener('keydown', (e) => {
+      // Don't intercept when user is typing in inputs or textareas
+      if (['INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
+
+      const activeEl = document.activeElement;
+
+      // Handle Arrow keys on App Cards
+      if (activeEl && activeEl.classList.contains('nokia-app-card')) {
+        const track = activeEl.closest('.nokia-carousel-track');
+        if (!track) return;
+
+        const cards = Array.from(track.querySelectorAll('.nokia-app-card'));
+        const currentIndex = cards.indexOf(activeEl);
+
+        if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          const nextCard = cards[currentIndex + 1];
+          if (nextCard) {
+            nextCard.focus();
+            nextCard.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            playBeep(840, 0.025);
+          }
+        } else if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          const prevCard = cards[currentIndex - 1];
+          if (prevCard) {
+            prevCard.focus();
+            prevCard.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            playBeep(780, 0.025);
+          }
+        } else if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          const currentSection = activeEl.closest('.nokia-carousel-section');
+          const nextSection = currentSection?.nextElementSibling;
+          const targetCard = nextSection?.querySelector('.nokia-app-card');
+          if (targetCard) {
+            targetCard.focus();
+            targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            playBeep(720, 0.03);
+          }
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          const currentSection = activeEl.closest('.nokia-carousel-section');
+          const prevSection = currentSection?.previousElementSibling;
+          const targetCard = prevSection?.querySelector('.nokia-app-card');
+          if (targetCard) {
+            targetCard.focus();
+            targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            playBeep(880, 0.03);
+          }
+        } else if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          const appId = activeEl.dataset.appId;
+          if (appId) {
+            playBeep(1100, 0.05);
+            IPTools.nav.openTool(appId);
+          }
+        }
+      }
+
+      // Shortcut: Alt + N toggles Retro Nokia 1100 Mode
+      if (e.altKey && (e.key === 'n' || e.key === 'N')) {
+        e.preventDefault();
+        toggleRetroMode();
+      }
+
+      // Escape: Return to Dashboard Launcher
+      if (e.key === 'Escape' && IPTools.state.currentView === 'tool') {
+        IPTools.nav.go('dashboard');
+      }
+    });
+  };
+
+  // Setup Searchable "All Applications" View
+  const setupAllAppsView = () => {
+    const viewContainer = document.getElementById('view-tools');
+    if (!viewContainer) return;
+
+    viewContainer.innerHTML = `
+      <div class="all-apps-drawer-header">
+        <div class="all-apps-search-box">
+          <span style="font-size:1.2rem;color:var(--accent-primary);">🔍</span>
+          <input type="text" class="all-apps-search-inp" id="allAppsSearchInp" placeholder="Search 71 developer applications... (Type to filter)" autofocus />
+          <span class="nokia-hero-index-badge" id="allAppsCountBadge">71 Apps</span>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;" id="allAppsCatPills"></div>
+      </div>
+      <div class="all-apps-grid" id="allAppsGrid"></div>
+    `;
+
+    const inp = document.getElementById('allAppsSearchInp');
+    const grid = document.getElementById('allAppsGrid');
+    const badge = document.getElementById('allAppsCountBadge');
+    const pills = document.getElementById('allAppsCatPills');
+    const allTools = IPTools.registry.all();
+
+    let currentFilter = 'all';
+
+    const renderGrid = (query = '') => {
+      const q = query.toLowerCase().trim();
+      grid.innerHTML = '';
+
+      const filtered = allTools.filter(t => {
+        const matchesCat = currentFilter === 'all' || t.category === currentFilter;
+        const matchesQuery = !q || t.name.toLowerCase().includes(q) || t.description.toLowerCase().includes(q) || (t.tags && t.tags.some(tag => tag.toLowerCase().includes(q)));
+        return matchesCat && matchesQuery;
+      });
+
+      if (badge) badge.textContent = `${filtered.length} / ${allTools.length} Apps`;
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `<div class="nokia-empty-carousel" style="grid-column: 1 / -1; padding: 40px;">No applications found matching "${escHTML(q)}". Try searching for JSON, Base64, QR, or API.</div>`;
+        return;
+      }
+
+      filtered.forEach(tool => {
+        grid.appendChild(createAppCard(tool));
+      });
+    };
+
+    // Populate category pills
+    if (pills) {
+      const cats = IPTools.registry.categories();
+      pills.innerHTML = `
+        <button class="cat-filter-pill active" data-all-cat="all">All (71)</button>
+        ${cats.map(c => {
+          const count = allTools.filter(t => t.category === c).length;
+          return `<button class="cat-filter-pill" data-all-cat="${escHTML(c)}">${escHTML(c)} (${count})</button>`;
+        }).join('')}
+      `;
+
+      pills.querySelectorAll('[data-all-cat]').forEach(btn => {
+        btn.onclick = () => {
+          pills.querySelectorAll('[data-all-cat]').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentFilter = btn.dataset.allCat;
+          renderGrid(inp.value);
+        };
+      });
+    }
+
+    if (inp) {
+      inp.oninput = () => renderGrid(inp.value);
+    }
+
+    renderGrid();
+  };
+
+  // Initialize Nokia Launcher Module
+  const init = () => {
+    // Check saved state
+    state.retroMode = IPTools.storage.get('nokia_retro_mode', false);
+    state.soundEnabled = IPTools.storage.get('nokia_sound_enabled', true);
+
+    if (state.retroMode) {
+      document.body.classList.add('nokia-1100-mode');
+    }
+
+    // Set full-width layout
+    const appEl = document.getElementById('app');
+    if (appEl) {
+      appEl.classList.add('nokia-mode-layout');
+    }
+
+    // Bind Top Status Bar Controls
+    const retroBtn = document.getElementById('nokiaRetroToggleBtn');
+    if (retroBtn) {
+      retroBtn.onclick = () => toggleRetroMode();
+      retroBtn.classList.toggle('active', state.retroMode);
+    }
+
+    const soundBtn = document.getElementById('nokiaSoundToggleBtn');
+    if (soundBtn) {
+      soundBtn.onclick = () => toggleSound();
+      soundBtn.classList.toggle('active', state.soundEnabled);
+    }
+
+    // Clock update
+    const clockEl = document.getElementById('nokiaStatusClock');
+    const updateClock = () => {
+      if (clockEl) {
+        const now = new Date();
+        clockEl.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      }
+    };
+    updateClock();
+    setInterval(updateClock, 30000);
+
+    // Bind soft-keys
+    const softLeft = document.getElementById('nokiaSoftkeyLeft');
+    const softCenter = document.getElementById('nokiaSoftkeyCenter');
+    const softRight = document.getElementById('nokiaSoftkeyRight');
+
+    if (softLeft) {
+      softLeft.onclick = () => {
+        playBeep(1000, 0.04);
+        const curr = state.heroTools[state.heroIndex];
+        if (curr) IPTools.nav.openTool(curr.id);
+      };
+    }
+    if (softCenter) {
+      softCenter.onclick = () => {
+        state.heroIndex = (state.heroIndex + 1) % state.heroTools.length;
+        playBeep(850, 0.03);
+        renderHeroStage();
+      };
+    }
+    if (softRight) {
+      softRight.onclick = () => {
+        playBeep(600, 0.04);
+        IPTools.nav.go('dashboard');
+      };
+    }
+
+    // Workspace back button
+    const wsBack = document.getElementById('wsBack');
+    if (wsBack) {
+      wsBack.innerHTML = '← 📱 Nokia Launcher';
+      wsBack.onclick = () => {
+        playBeep(700, 0.03);
+        IPTools.nav.go('dashboard');
+      };
+    }
+
+    // Render Hero Stage & Carousels
+    renderHeroStage();
+    renderDashboardCarousels();
+    setupKeyboardNav();
+    setupAllAppsView();
+  };
+
+  return {
+    init,
+    renderHeroStage,
+    renderDashboardCarousels,
+    renderFavoritesCarousel,
+    renderRecentCarousel,
+    toggleRetroMode,
+    toggleSound,
+    playBeep
+  };
+})();
+
+
 /* ═══════════════════════════════════════════
    APP INIT
 ═══════════════════════════════════════════ */
@@ -13262,5 +14498,13 @@ IPTools.app = (() => {
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>IPTools.app.init());
 else IPTools.app.init();
 </script>
+
+  <!-- NOKIA 1100 SOFTKEY BAR (RETRO MODE) -->
+  <div class="nokia-softkey-bar" id="nokiaSoftkeyBar">
+    <div class="nokia-softkey-left" id="nokiaSoftkeyLeft">[ ⏎ Select / Launch ]</div>
+    <div class="nokia-softkey-center" id="nokiaSoftkeyCenter">[ ◄ Navi-Key ► ]</div>
+    <div class="nokia-softkey-right" id="nokiaSoftkeyRight">[ ◀ Home Menu ]</div>
+  </div>
+
 </body>
 </html>
