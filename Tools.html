@@ -4564,6 +4564,341 @@ body.nokia-1100-mode .nokia-softkey-bar {
   }
 }
 
+
+/* ═════════════════════════════════════════════════════════════════════
+   ROCK-SOLID LAYOUT & RESPONSIVENESS FIXES
+   ═════════════════════════════════════════════════════════════════════ */
+.app {
+  display: grid !important;
+  grid-template-columns: var(--sidebar-w) 1fr !important;
+  grid-template-rows: var(--topbar-h) 1fr var(--statusbar-h) !important;
+  grid-template-areas: "sidebar topbar" "sidebar main" "sidebar statusbar" !important;
+  height: 100vh !important;
+  min-height: 100vh !important;
+  max-height: 100vh !important;
+  overflow: hidden !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+.main {
+  grid-area: main !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding: 0 !important;
+  min-height: 0 !important;
+  position: relative !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.main > .nokia-status-bar {
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.main > .view {
+  flex: 1 0 auto;
+  padding: 20px 28px 40px;
+}
+
+.main > .view.active {
+  display: block !important;
+}
+
+/* Tool Directory Styling */
+.dir-header h1 {
+  font-family: var(--font-sans);
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.3px;
+}
+.dir-header p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin-top: 4px;
+}
+.dir-toolbar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 18px;
+}
+.dir-search {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface-primary);
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  padding: 10px 16px;
+}
+.dir-search svg {
+  width: 18px;
+  height: 18px;
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+}
+.dir-search input {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  width: 100%;
+  outline: none;
+}
+.dir-sort {
+  background: var(--surface-primary);
+  border: 1px solid var(--border-default);
+  color: #fff;
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  font-weight: 600;
+  border-radius: 12px;
+  padding: 10px 14px;
+  outline: none;
+  cursor: pointer;
+}
+.dir-categories {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+.dir-cat-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 600;
+  border-radius: 20px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.dir-cat-btn:hover {
+  background: rgba(139, 92, 246, 0.2);
+  border-color: var(--accent-primary);
+  color: #fff;
+}
+.dir-cat-btn.active {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: #fff;
+  box-shadow: 0 0 14px var(--accent-glow);
+}
+.dir-count {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-tertiary);
+  margin-top: 14px;
+  margin-bottom: 8px;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 900px) {
+  .app {
+    grid-template-columns: 1fr !important;
+    grid-template-areas: "topbar" "main" "statusbar" !important;
+  }
+  .sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    bottom: 0 !important;
+    width: 280px !important;
+    z-index: 1000 !important;
+    transform: translateX(-100%) !important;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    box-shadow: 0 0 40px rgba(0,0,0,0.8) !important;
+  }
+  .sidebar.open {
+    transform: translateX(0) !important;
+  }
+  .sidebar-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 999;
+  }
+  .sidebar-backdrop.show {
+    display: block !important;
+  }
+  .mobile-menu-btn {
+    display: flex !important;
+  }
+  .main > .view {
+    padding: 16px 16px 32px !important;
+  }
+}
+
+
+/* ═════════════════════════════════════════════════════════════════════
+   FINAL RESPONSIVE & DUAL-PANE LAYOUT FIX
+   ═════════════════════════════════════════════════════════════════════ */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.app {
+  display: grid !important;
+  grid-template-columns: var(--sidebar-w) 1fr !important;
+  grid-template-rows: var(--topbar-h) 1fr var(--statusbar-h) !important;
+  grid-template-areas: "sidebar topbar" "sidebar main" "sidebar statusbar" !important;
+  height: 100vh !important;
+  min-height: 100vh !important;
+  max-height: 100vh !important;
+  width: 100vw !important;
+  overflow: hidden !important;
+  position: relative !important;
+  z-index: 1 !important;
+  transition: grid-template-columns var(--transition) !important;
+}
+
+.app.sidebar-collapsed {
+  grid-template-columns: var(--sidebar-w-collapsed) 1fr !important;
+}
+
+.sidebar {
+  grid-area: sidebar !important;
+  background: var(--surface-primary) !important;
+  border-right: 1px solid var(--border-subtle) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  max-height: 100vh !important;
+  position: relative !important;
+  z-index: 60 !important;
+  overflow: hidden !important;
+}
+
+.sidebar-scroll {
+  flex: 1 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding: 10px 8px !important;
+}
+
+.topbar {
+  grid-area: topbar !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 0 20px !important;
+  background: var(--surface-primary) !important;
+  border-bottom: 1px solid var(--border-subtle) !important;
+  height: var(--topbar-h) !important;
+  position: relative !important;
+  z-index: 50 !important;
+  backdrop-filter: blur(12px) !important;
+}
+
+.main {
+  grid-area: main !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding: 0 !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  position: relative !important;
+  display: flex !important;
+  flex-direction: column !important;
+  background: var(--bg-primary) !important;
+}
+
+.main > .nokia-status-bar {
+  flex-shrink: 0 !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 40 !important;
+}
+
+.main > .view {
+  flex: 1 0 auto !important;
+  padding: 20px 28px 40px !important;
+}
+
+.main > .view.active {
+  display: block !important;
+}
+
+.statusbar {
+  grid-area: statusbar !important;
+  height: var(--statusbar-h) !important;
+  background: var(--surface-primary) !important;
+  border-top: 1px solid var(--border-subtle) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 0 16px !important;
+  font-family: var(--font-mono) !important;
+  font-size: 0.72rem !important;
+  color: var(--text-tertiary) !important;
+  position: relative !important;
+  z-index: 50 !important;
+}
+
+/* Tool Grid Responsive */
+.tool-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)) !important;
+  gap: 16px !important;
+  margin-top: 16px !important;
+}
+
+/* Responsive Breakpoints for Mobile & Tablet */
+@media (max-width: 960px) {
+  .app {
+    grid-template-columns: 1fr !important;
+    grid-template-areas: "topbar" "main" "statusbar" !important;
+  }
+  .sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    bottom: 0 !important;
+    width: 280px !important;
+    z-index: 1000 !important;
+    transform: translateX(-100%) !important;
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    box-shadow: 0 0 40px rgba(0,0,0,0.8) !important;
+  }
+  .sidebar.open {
+    transform: translateX(0) !important;
+  }
+  .mobile-menu-btn {
+    display: flex !important;
+  }
+  .main > .view {
+    padding: 16px 16px 32px !important;
+  }
+  .nokia-hero-stage {
+    grid-template-columns: 1fr !important;
+    text-align: center !important;
+  }
+  .nokia-hero-icon-box {
+    margin: 0 auto !important;
+  }
+  .nokia-hero-actions {
+    align-items: center !important;
+    width: 100% !important;
+  }
+  .nokia-launch-btn {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -4599,10 +4934,6 @@ body.nokia-1100-mode .nokia-softkey-bar {
         <div class="brand-mark">IP</div>
         <div class="brand-text"><span class="ip">Imran</span><span> Pathan's Tools</span> <span class="genz-badge">SUPER APP</span></div>
       </div>
-        <div class="brand-text"><span class="ip">Imran</span><span> Pathan's Tools</span> <span class="aurora-badge">AURORA</span></div>
-      </div>
-        <div class="brand-text"><span class="ip">Imran</span><span> Pathan's Tool</span></div>
-      </div>
       <div class="topbar-search" id="topbarSearch" role="search">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
         <input type="text" placeholder="Search 71 developer tools... ⌘K" id="topbarSearchInput" aria-label="Search tools">
@@ -4619,41 +4950,40 @@ body.nokia-1100-mode .nokia-softkey-bar {
     </div>
   </header>
 
-  <!-- NOKIA STATUS DECK -->
-  <div class="nokia-status-bar" id="nokiaStatusBar">
-    <div class="nokia-status-left">
-      <div class="nokia-signal-meter" title="100% Client-Side Local Signal">
-        <span class="nokia-signal-bar" style="height:4px;"></span>
-        <span class="nokia-signal-bar" style="height:6px;"></span>
-        <span class="nokia-signal-bar" style="height:9px;"></span>
-        <span class="nokia-signal-bar" style="height:12px;"></span>
+    <!-- MAIN -->
+  <main class="main" id="mainContent">
+    <!-- NOKIA STATUS DECK -->
+    <div class="nokia-status-bar" id="nokiaStatusBar">
+      <div class="nokia-status-left">
+        <div class="nokia-signal-meter" title="100% Client-Side Local Signal">
+          <span class="nokia-signal-bar" style="height:4px;"></span>
+          <span class="nokia-signal-bar" style="height:6px;"></span>
+          <span class="nokia-signal-bar" style="height:9px;"></span>
+          <span class="nokia-signal-bar" style="height:12px;"></span>
+        </div>
+        <span class="nokia-status-pill">⚡ IP-NET 5G • 0ms</span>
+        <span style="color:var(--text-tertiary);">|</span>
+        <span id="nokiaStatusClock" style="font-weight:700;color:var(--neon-cyan);">17:45</span>
       </div>
-      <span class="nokia-status-pill">⚡ IP-NET 5G • 0ms</span>
-      <span style="color:var(--text-tertiary);">|</span>
-      <span id="nokiaStatusClock" style="font-weight:700;color:var(--neon-cyan);">17:45</span>
-    </div>
-    <div class="nokia-status-right">
-      <button class="nokia-toggle-btn" id="nokiaRetroToggleBtn" title="Toggle Classic Monochrome Nokia 1100 Mode (Alt+N)">
-        📱 Retro Nokia Mode
-      </button>
-      <button class="nokia-toggle-btn" id="nokiaSoundToggleBtn" title="Toggle Keypad Audio Beep Effects">
-        🔔 Sound: ON
-      </button>
-      <a href="#tools" class="nokia-toggle-btn" id="nokiaAllAppsBtn" data-nav="tools" title="Open All Applications Drawer">
-        ▦ All Apps (71)
-      </a>
-      <div class="nokia-battery-meter" title="100% Local-First Private Battery">
-        <span style="font-size:0.7rem;font-weight:700;color:var(--neon-green);">100%</span>
-        <div class="nokia-battery-box">
-          <div class="nokia-battery-fill"></div>
+      <div class="nokia-status-right">
+        <button class="nokia-toggle-btn" id="nokiaRetroToggleBtn" title="Toggle Classic Monochrome Nokia 1100 Mode (Alt+N)">
+          📱 Retro Nokia Mode
+        </button>
+        <button class="nokia-toggle-btn" id="nokiaSoundToggleBtn" title="Toggle Keypad Audio Beep Effects">
+          🔔 Sound: ON
+        </button>
+        <a href="#tools" class="nokia-toggle-btn" id="nokiaAllAppsBtn" data-nav="tools" title="Open All Applications Directory">
+          ▦ Tool Directory (71)
+        </a>
+        <div class="nokia-battery-meter" title="100% Local-First Private Battery">
+          <span style="font-size:0.7rem;font-weight:700;color:var(--neon-green);">100%</span>
+          <div class="nokia-battery-box">
+            <div class="nokia-battery-fill"></div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-
-  <!-- MAIN -->
-  <main class="main" id="mainContent">
     <section class="view active" id="view-dashboard" data-view="dashboard">
       <!-- NOKIA 1100 HERO SHOWCASE CAROUSEL -->
       <div class="nokia-hero-section">
@@ -4679,21 +5009,24 @@ body.nokia-1100-mode .nokia-softkey-bar {
     </section>
 
     <section class="view" id="view-tools" data-view="tools">
-      <div class="dir-header"><h1>Tool Directory</h1><p>Browse, search, and open developer utilities. Everything runs locally in your browser.</p></div>
+      <div class="dir-header">
+        <h1>Tool Directory</h1>
+        <p>Browse, search, and open developer utilities. Filter by category from the sidebar or click any tag below.</p>
+      </div>
       <div class="dir-toolbar">
         <div class="dir-search">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          <input type="text" placeholder="Search tools..." id="dirSearchInput" aria-label="Search tools">
+          <input type="text" placeholder="Search 71 developer tools... (Press / to search)" id="dirSearchInput" aria-label="Search tools">
         </div>
         <select class="dir-sort" id="dirSort" aria-label="Sort tools">
           <option value="recommended">Recommended</option>
-          <option value="alphabetical">Alphabetical</option>
+          <option value="alphabetical">Alphabetical (A-Z)</option>
           <option value="recent">Recently Used</option>
-          <option value="most-used">Most Used</option>
+          <option value="most-used">Most Popular</option>
         </select>
       </div>
       <div class="dir-categories" id="dirCategories"></div>
-      <div class="dir-count" id="dirCount"></div>
+      <div class="dir-count" id="dirCount">71 tools found</div>
       <div class="tool-grid" id="dirGrid"></div>
     </section>
 
@@ -5833,9 +6166,93 @@ IPTools.views = {
     }
   },
   renderDirectory: () => {
-    if (window.IPTools && IPTools.nokia) {
-      IPTools.nokia.setupAllAppsView();
+    const cats = ['All', ...IPTools.registry.categories()];
+    const catsContainer = document.getElementById('dirCategories');
+    if (catsContainer) {
+      catsContainer.innerHTML = '';
+      cats.forEach((c, i) => {
+        const count = c === 'All' ? IPTools.registry.all().length : IPTools.registry.all().filter(t => t.category === c).length;
+        const btn = document.createElement('button');
+        btn.className = 'dir-cat-btn' + (i === 0 ? ' active' : '');
+        btn.dataset.cat = c;
+        btn.innerHTML = `${IPTools.utils.escHTML(c)} <span style="font-size:0.75rem;opacity:0.7;">(${count})</span>`;
+        btn.addEventListener('click', () => {
+          IPTools.utils.$$('.dir-cat-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          IPTools.views.applyDirFilter();
+        });
+        catsContainer.appendChild(btn);
+      });
     }
+
+    const searchInput = document.getElementById('dirSearchInput');
+    if (searchInput && !searchInput.dataset.bound) {
+      searchInput.dataset.bound = '1';
+      searchInput.addEventListener('input', IPTools.utils.debounce(() => IPTools.views.applyDirFilter(), 100));
+    }
+
+    const sortSel = document.getElementById('dirSort');
+    if (sortSel && !sortSel.dataset.bound) {
+      sortSel.dataset.bound = '1';
+      sortSel.addEventListener('change', () => IPTools.views.applyDirFilter());
+    }
+
+    IPTools.views.applyDirFilter();
+  },
+  applyDirFilter: () => {
+    const searchInput = document.getElementById('dirSearchInput');
+    const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
+    const activeCat = document.querySelector('.dir-cat-btn.active');
+    const cat = activeCat ? activeCat.dataset.cat : 'All';
+    const sort = document.getElementById('dirSort') ? document.getElementById('dirSort').value : 'recommended';
+
+    let tools = IPTools.registry.all();
+
+    // Category filter
+    if (cat && cat !== 'All') {
+      tools = tools.filter(t => t.category === cat);
+    }
+
+    // Search query filter
+    if (query) {
+      tools = tools.filter(t => 
+        t.name.toLowerCase().includes(query) ||
+        t.description.toLowerCase().includes(query) ||
+        (t.tags && t.tags.some(tag => tag.toLowerCase().includes(query))) ||
+        t.id.toLowerCase().includes(query)
+      );
+    }
+
+    // Sort order
+    if (sort === 'alphabetical') {
+      tools = tools.slice().sort((a, b) => a.name.localeCompare(b.name));
+    } else if (sort === 'recent') {
+      const order = {};
+      const recentList = (IPTools.recent && typeof IPTools.recent.all === 'function') ? IPTools.recent.all() : (IPTools.state.recent || []);
+      recentList.forEach((r, i) => { order[typeof r === 'string' ? r : r.id] = i; });
+      tools = tools.slice().sort((a, b) => (order[a.id] ?? 999) - (order[b.id] ?? 999));
+    } else if (sort === 'most-used') {
+      const usage = IPTools.state.usage || {};
+      tools = tools.slice().sort((a, b) => (usage[b.id] || 0) - (usage[a.id] || 0));
+    }
+
+    const countEl = document.getElementById('dirCount');
+    if (countEl) countEl.textContent = `${tools.length} tool${tools.length === 1 ? '' : 's'} found`;
+
+    const grid = document.getElementById('dirGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+
+    if (!tools.length) {
+      grid.innerHTML = `<div class="dir-empty" style="grid-column:1/-1;text-align:center;padding:48px 20px;">
+        <div style="font-size:2.5rem;margin-bottom:12px;">🔍</div>
+        <div style="font-size:1.15rem;font-weight:700;color:#fff;">No tools found</div>
+        <div style="color:var(--text-secondary);font-size:0.9rem;margin-top:6px;">No tools match category "${IPTools.utils.escHTML(cat)}" with search "${IPTools.utils.escHTML(query)}".</div>
+      </div>`;
+      return;
+    }
+
+    tools.forEach(t => grid.appendChild(IPTools.renderToolCard(t)));
   },
   renderFavorites: () => {
     const grid = document.getElementById('favGrid'); grid.innerHTML='';
